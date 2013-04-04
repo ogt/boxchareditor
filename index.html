@@ -1,0 +1,220 @@
+<html>
+<head>
+<title>A box character editor</title>
+<style>
+body {
+    font-family: Sans-Serif;
+}
+.header {
+    font-weight: bold;
+}
+.content .title {
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 20px;
+    margin-top: 5px;
+}
+
+.subtle {
+    font-size: 12px;
+    color: grey;
+}
+
+.modelField {
+  margin-bottom: 2px;
+}
+
+.modelLabel {
+  display: inline-block; 
+  width: 150px; 
+  text-align : right; 
+  margin-right: 10px; 
+}
+
+
+</style>
+</head>
+<body onKeyDown="keyPressed(event)" >
+<script src="js/jquery.js"></script>
+<script src="js/myutil.js"></script>
+
+
+<!-- TEST FRAMEWORK BEGINS -->
+<!-- http://net.tutsplus.com/tutorials/javascript-ajax/quick-tip-quick-and-easy-javascript-testing-with-assert/ -->
+<style>
+    .pass:before {
+        content: 'PASS: ';
+        color:  blue;
+        font-weight: bold;
+    }
+
+    .fail:before {
+        content: 'FAIL: ';
+        color: red;
+        font-weight: bold;
+    }
+</style>
+<ul id="assertroot"></ul>
+<script>
+function assert( outcome, description ) {
+    var li = document.createElement('li');
+    li.className = outcome ? 'pass' : 'fail';
+    li.appendChild( document.createTextNode( description ) );
+
+    document.getElementById('assertroot').appendChild(li);
+};
+</script>
+<!-- TEST FRAMEWORK ENDS -->
+
+
+
+<script>
+
+var model = {
+  bufferRows : 24,
+  bufferLength : 80,
+  movingWord : 'o',
+  backgroundCharacter : ' ',
+  fontFamily : 'courier' ,
+  fontSize : '12',
+  speed : 1,
+  wordPositionRow : 0,
+  wordPositionCol : 0
+}
+var buf = [];
+
+function restart() {
+  unsortedKeys(model).forEach(function(field) { if ($('#'+field).val()) model[field] = $('#'+field).val() })
+  model.wordPositionRow = 0
+  model.wordPositionCol = 0
+  clearStringBuffer()
+  redrawModel()
+}
+
+function left() {
+  if (model.wordPositionCol > 0) model.wordPositionCol--
+}
+
+function right() {
+  if (model.wordPositionCol < model.bufferLength - 1) model.wordPositionCol++
+}
+
+function up() {
+  if (model.wordPositionRow > 0) model.wordPositionRow--
+}
+
+function down() {
+  if (model.wordPositionRow < model.bufferRows - 1) model.wordPositionRow++
+}
+
+function move(direction, speed, brush) {
+  //evtobj.altKey || evtobj.ctrlKey || evtobj.shiftKey
+  //var brush = if (e 
+  speed = speed || model.speed
+  for (var i=0; i<speed; i++) { 
+    var oldpos = {col: model.wordPositionCol, row: model.wordPositionRow};
+    direction();
+    var newpos = {col: model.wordPositionCol, row: model.wordPositionRow};
+    updateStringBuffer(oldpos,newpos, brush);
+//    alert('direction : '+direction+' oldpos : '+JSON.stringify(oldpos) + ' newpos : '+JSON.stringify(newpos))
+    redrawModel();
+  }
+}
+
+// handle left and right arrows
+// http://stackoverflow.com/questions/3691461/remove-key-press-delay-in-javascript
+function keyPressed(e) { 
+  var LEFTARROW = 37
+  var UPARROW = 38
+  var RIGHTARROW = 39
+  var DOWNARROW = 40
+  var brush = 0
+
+  if (e.shiftKey) brush = 1
+  switch (e.keyCode) {
+    case LEFTARROW :
+      move(left, model.speed,brush); break
+    case RIGHTARROW :
+      move(right, model.speed, brush); break
+    case UPARROW :
+      move(up, model.speed, brush); break
+    case DOWNARROW :
+      move(down, model.speed, brush); break
+    default:
+  }
+}
+
+function clearStringBuffer() {
+  for (i=0;i<model.bufferRows;i++) {
+    buf[i] = stringInit(model.bufferLength,model.backgroundCharacter)
+    if (i == model.wordPositionRow) {
+      buf[i] = stringPaste(buf[i],model.movingWord,model.wordPositionCol)
+    }
+  }
+  return buf;
+}
+
+function updateStringBuffer(oldpos, newpos, brush) {
+   if (!brush) { // ie. we just move
+     buf[oldpos.row] = stringPaste(buf[oldpos.row], 
+        Array(model.movingWord.length+1).join(model.backgroundCharacter), oldpos.col)
+   }
+   buf[newpos.row] = stringPaste(buf[newpos.row], model.movingWord, newpos.col)
+}
+
+function drawBuffer() {
+  var pre  = $('<pre id="buffer">')
+  pre.text(buf.join('\n'))
+//  var d  = $('<div id="buffer">')
+//  for (i=0;i<model.bufferRows;i++) {
+//    d.append($('<p>').text(buf[i]).css({'margin-top':0, 'margin-bottom':0 }))
+//  }
+//  d.css({ 'font-family' : model.fontFamily, 'font-size' : model.fontSize, 'word-wrap': 'break-word', 'margin-top':0, 'margin-bottom':0 })
+  return pre;
+}
+
+function drawModelField(field) {
+  var d = $('<div class="modelField"/>')
+  d.append($('<label class="modelLabel subtle"/>').attr('for',field).text(field))
+  d.append($('<input type="text" class="subtle"/>').attr('id',field).attr('value', model[field]))
+  return d  
+}
+
+function drawModelEditor() {
+  var d = $('<div/>')
+  unsortedKeys(model).forEach(function(field) { d.append(drawModelField(field)) })
+  return d
+}
+
+function drawControlPanel() {
+  var d = $('<div/>')
+  d.append($('<button type="button" onclick="restart()">Restart</button>'))
+  d.append($('<button type="button" onclick="move(left)">Left</button>'))
+  d.append($('<button type="button" onclick="move(right)">Right</button>'))
+  d.append($('<button type="button" onclick="move(up)">Up</button>'))
+  d.append($('<button type="button" onclick="move(down)">Down</button>'))
+  d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw'))
+  d.append(drawModelEditor())
+  return d;
+}
+
+
+function redrawModel() {
+  $('.content').empty().append($('<p class="header">').text('A box character editor'))
+  $('.content').append($('<hr/>'))
+  $('.content').append(drawBuffer())
+  $('.content').append($('<hr/>'))
+  $('.content').append(drawControlPanel())
+}
+
+$(function () {
+//  _stringPasteTester()
+  restart()
+})
+
+</script>
+<div class="content fill"></div>
+
+</body>
+</html> 
+
