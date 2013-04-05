@@ -178,9 +178,11 @@ function updateTables(oldpos, newpos, brush) {
   }
   function updateCursor(x,y,line) {
     if (brush == ' ')
-      lines[y][x] = line
+      lines[y][x] = line;
     else if (lines[y][x] == '+')
       return; // | or - on +
+    else if (lines[y][x] == ' ')
+      lines[y][x] = line; // - or | on ' '
     else if (lines[y][x] != line)
       lines[y][x] = '+'; // | on - or - on |
     else
