@@ -50,3 +50,19 @@ function unsortedKeys(hash) {
 
 function sortedKeys(hash) { return unsortedKeys(hash).sort() }
 
+function escapeHTML(s) {
+  s = s.replace(/&/g, "&amp;")
+  s = s.replace(/</g, "&lt;").
+      replace(/>/g, "&gt;").
+      replace(/'/g, "&apos;").
+      replace(/"/g, "&quot;").
+      replace(/ /g, "&nbsp;").
+      replace(/[\u0080-\uFFFF]/g, function (c) {
+          var code = c.charCodeAt(0)
+          return '&#' + code + ';'
+          // if we want hex:
+          var hex = code.toString(16)
+          return '&#x' + hex + ';'
+      })
+  return s;
+}
