@@ -73,13 +73,13 @@ function assert( outcome, description ) {
 var model = {
   bufferRows : 24,
   bufferLength : 80,
-  boxChar : 'o',
-  backgroundChar : ' ',
   fontFamily : 'courier' ,
   fontSize : '12',
   speed : 1,
-  wordPositionRow : 0,
-  wordPositionCol : 0
+}
+var cursor = {
+  row : 0,
+  col : 0
 }
 var lines = [];
 
@@ -90,26 +90,26 @@ var BRUSHERASE = '#';
 
 function restart() {
   unsortedKeys(model).forEach(function(field) { if ($('#'+field).val()) model[field] = $('#'+field).val() })
-  model.wordPositionRow = 0
-  model.wordPositionCol = 0
-  clearStringBuffer()
+  cursor.row = 0
+  cursor.col = 0
+  initTables()
   redrawModel()
 }
 
 function left() {
-  if (model.wordPositionCol > 0) model.wordPositionCol--
+  if (cursor.col > 0) cursor.col--
 }
 
 function right() {
-  if (model.wordPositionCol < model.bufferLength - 1) model.wordPositionCol++
+  if (cursor.col < model.bufferLength - 1) cursor.col++
 }
 
 function up() {
-  if (model.wordPositionRow > 0) model.wordPositionRow--
+  if (cursor.row > 0) cursor.row--
 }
 
 function down() {
-  if (model.wordPositionRow < model.bufferRows - 1) model.wordPositionRow++
+  if (cursor.row < model.bufferRows - 1) cursor.row++
 }
 
 function move(direction, speed, brush) {
@@ -117,14 +117,14 @@ function move(direction, speed, brush) {
   //var brush = if (e 
   speed = speed || model.speed
   for (var i=0; i<speed; i++) { 
-    var oldpos = {col: model.wordPositionCol, row: model.wordPositionRow};
+    var oldpos = {col: cursor.col, row: cursor.row};
     direction();
-    var newpos = {col: model.wordPositionCol, row: model.wordPositionRow};
+    var newpos = {col: cursor.col, row: cursor.row};
 //    alert('direction : '+direction+' oldpos : '+JSON.stringify(oldpos) + ' newpos : '+JSON.stringify(newpos) + ' brush : '+brush)
     if (brush) {
       updateTables(oldpos,newpos, brush);
     }
-    redrawModel();
+    fastRedrawModel();
   }
 }
 
@@ -140,21 +140,21 @@ function keyPressed(e) {
 
   if (e.shiftKey) brush = BRUSHSINGLE;
   if (e.altKey) brush = BRUSHERASE;
-
+  var speed = $('#speed').val() || model.speed;
   switch (e.keyCode) {
     case LEFTARROW :
-      move(left, model.speed,brush); break
+      move(left, speed,brush); break
     case RIGHTARROW :
-      move(right, model.speed, brush); break
+      move(right, speed, brush); break
     case UPARROW :
-      move(up, model.speed, brush); break
+      move(up, speed, brush); break
     case DOWNARROW :
-      move(down, model.speed, brush); break
+      move(down, speed, brush); break
     default:
   }
 }
 
-function clearStringBuffer() {
+function initTables() {
   for (var i=0;i<model.bufferRows;i++) {
     lines[i] = []
     for (var j=0;j<model.bufferLength;j++){
@@ -170,9 +170,9 @@ function updateTables(oldpos, newpos, brush) {
     if (lines[y][x] == '|') 
       if (lines[y][x-1] == '-' || lines[y][x+1] == '-') lines[y][x] = '+';
     if (lines[y][x] == '-')
-      if (lines[y-1][x] == '|' || lines[y+1][x] == '|') lines[y][x] = '+';
+      if ((y>0 && lines[y-1][x] == '|') || lines[y+1][x] == '|') lines[y][x] = '+';
     if (lines[y][x] == '+') {
-      if ( (lines[y-1][x] == ' ' || lines[y-1][x] == '-') && (lines[y+1][x] == ' ' || lines[y+1][x] == '-') )  lines[y][x] = '-';
+      if ( (  (y>0 && lines[y-1][x] == ' ') || (y>0 && lines[y-1][x] == '-'))  && (lines[y+1][x] == ' ' || lines[y+1][x] == '-') )  lines[y][x] = '-';
       if ( (lines[y][x-1] == ' ' || lines[y][x-1] == '|') && (lines[y][x+1] == ' ' || lines[y][x+1] == '|') )  lines[y][x] = '|';
     }
   }
@@ -212,19 +212,17 @@ function updateTables(oldpos, newpos, brush) {
 
 
 function drawBuffer() {
-//  var pre  = $('<pre id="buffer">')
-//  pre.text(buf.join('\n'))
-  var d  = $('<div id="buffer">')
+  var d  = $('<div>')
   for (var i=0;i<model.bufferRows;i++) {
     var s = lines[i].join('');
     var p;
-    if (i == model.wordPositionRow ) {
+    if (i == cursor.row ) {
       p = $('<p>').html(
-        escapeHTML(s.substr(0,model.wordPositionCol)) +
+        escapeHTML(s.substr(0,cursor.col)) +
         '<span id="cursor" style="background-color:yellow;">' + 
-        escapeHTML(s[model.wordPositionCol])+
+        escapeHTML(s[cursor.col])+
         '</span>'+
-        escapeHTML(s.substr(model.wordPositionCol+1))
+        escapeHTML(s.substr(cursor.col+1))
       )
     }
     else 
@@ -233,7 +231,6 @@ function drawBuffer() {
   }
   d.css({ 'font-family' : model.fontFamily, 'font-size' : model.fontSize, 'word-wrap': 'break-word', 'margin-top':0, 'margin-bottom':0 })
   return d;
-//  return pre;
 }
 
 function drawModelField(field) {
@@ -261,13 +258,17 @@ function drawControlPanel() {
   return d;
 }
 
+function fastRedrawModel() {
+   $('#buffer').empty().append(drawBuffer)
+}
 
 function redrawModel() {
   $('.content').empty().append($('<p class="header">').text('A box character editor'))
   $('.content').append($('<hr/>'))
-  $('.content').append(drawBuffer())
+  $('.content').append($('<div id="buffer" />'))
   $('.content').append($('<hr/>'))
   $('.content').append(drawControlPanel())
+  fastRedrawModel();
 }
 
 $(function () {
