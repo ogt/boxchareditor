@@ -1,13 +1,19 @@
 Box drawing character utility:
 
-First iteration:
+Simple utility to make it easier to create lines, line charts, org charts using plain text characters.
 
-textarea, 80x24 filled with blanks.
-Draw with selected chracter in a preformated area
-
-Below the buttons there are instructions:
- - You are in replace mode
- - Pressing Shift arrow to draw lines
-
-
-
+                                                                        
+              +--+                                                              
+              |  |                                                              
+              ++++                                                              
+               ||                                                               
+         +--+--++--+--+                                                         
+         +--+      +--+                                                         
+            |      |                                                            
+            |      |                                                            
+            +-+---++                                                            
+            | +-+ |                                                             
+            | | | |                                                             
+            | | | |                                                             
+            +-+ +-+                                                             
+                      
