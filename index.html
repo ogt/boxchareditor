@@ -247,7 +247,7 @@ function drawModelEditor() {
 }
 
 function drawControlPanel() {
-  var d = $('<div/>')
+  var d = $('<div/>');
   d.append($('<button type="button" onclick="restart()">Restart</button>'))
   d.append($('<button type="button" onclick="move(left)">Left</button>'))
   d.append($('<button type="button" onclick="move(right)">Right</button>'))
@@ -255,6 +255,7 @@ function drawControlPanel() {
   d.append($('<button type="button" onclick="move(down)">Down</button>'))
   d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw. Press Alt to Erase'))
   d.append(drawModelEditor())
+  d.append($('<a href="https://github.com/you"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>'));
   return d;
 }
 
