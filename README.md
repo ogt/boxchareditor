@@ -17,7 +17,7 @@ Simple utility to make it easier to create lines, line charts, org charts using 
             | | | |                                                             
             +-+ +-+                                                             
                       
-To try it go to ogt.github.com/boxchareditor
+To try it go to http://ogt.github.com/boxchareditor
 and then use your keyboard arrows to move the yellow cursor around.
 When you want to draw a line, keep the SHIFT key pressed while you move the arrows.
 The line will be using the `-` dash character to draw the l when moving horizontally and the  `|` bar character 
