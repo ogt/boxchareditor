@@ -25,10 +25,10 @@ body {
 }
 
 .modelLabel {
-  display: inline-block; 
-  width: 150px; 
-  text-align : right; 
-  margin-right: 10px; 
+  display: inline-block;
+  width: 150px;
+  text-align : right;
+  margin-right: 10px;
 }
 
 
@@ -116,9 +116,9 @@ function down() {
 
 function move(direction, speed, brush) {
   //evtobj.altKey || evtobj.ctrlKey || evtobj.shiftKey
-  //var brush = if (e 
+  //var brush = if (e
   speed = speed || model.speed
-  for (var i=0; i<speed; i++) { 
+  for (var i=0; i<speed; i++) {
     var oldpos = {col: cursor.col, row: cursor.row};
     direction();
     var newpos = {col: cursor.col, row: cursor.row};
@@ -136,7 +136,7 @@ function move(direction, speed, brush) {
 // handle left and right arrows
 // http://stackoverflow.com/questions/3691461/remove-key-press-delay-in-javascript
 
-function keyPressed(e) { 
+function keyPressed(e) {
   var LEFTARROW = 37
   var UPARROW = 38
   var RIGHTARROW = 39
@@ -145,6 +145,7 @@ function keyPressed(e) {
 
   if (e.shiftKey) brush = BRUSHSINGLE;
   if (e.altKey) brush = BRUSHERASE;
+  if (e.ctrlKey) brush = BRUSHDOUBLE;
   var speed = $('#speed').val() || model.speed;
   switch (e.keyCode) {
     case LEFTARROW :
@@ -163,7 +164,7 @@ function initTables() {
   for (var i=0;i<model.bufferRows;i++) {
     lines[i] = []
     for (var j=0;j<model.bufferLength;j++){
-      lines[i][j] = ' ';  
+      lines[i][j] = ' ';
     }
   }
 }
@@ -176,13 +177,13 @@ function drawBuffer() {
     if (i == cursor.row ) {
       p = $('<p>').html(
         escapeHTML(s.substr(0,cursor.col)) +
-        '<span id="cursor" style="background-color:yellow;">' + 
+        '<span id="cursor" style="background-color:yellow;">' +
         escapeHTML(s[cursor.col])+
         '</span>'+
         escapeHTML(s.substr(cursor.col+1))
       )
     }
-    else 
+    else
       p = $('<p>').html(escapeHTML(s));
     d.append(p.css({'margin-top':0, 'margin-bottom':0 }))
   }
@@ -194,7 +195,7 @@ function drawModelField(field) {
   var d = $('<div class="modelField"/>')
   d.append($('<label class="modelLabel subtle"/>').attr('for',field).text(field))
   d.append($('<input type="text" class="subtle"/>').attr('id',field).attr('value', model[field]))
-  return d  
+  return d
 }
 
 function drawModelEditor() {
@@ -238,5 +239,5 @@ $(function () {
 <div class="content fill"></div>
 
 </body>
-</html> 
+</html>
 

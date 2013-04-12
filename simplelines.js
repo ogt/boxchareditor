@@ -2,7 +2,7 @@ function updateTablesSimple(oldpos, newpos, brush) {
   function updatePos(x,y) {
     if (x < 0 || y < 0) return;
     if (y >= model.bufferRows || x >=model.bufferLength) return;
-    if (lines[y][x] == '|') 
+    if (lines[y][x] == '|')
       if (lines[y][x-1] == '-' || lines[y][x+1] == '-') lines[y][x] = '+';
     if (lines[y][x] == '-')
       if ((y>0 && lines[y-1][x] == '|') || lines[y+1][x] == '|') lines[y][x] = '+';
@@ -26,8 +26,10 @@ function updateTablesSimple(oldpos, newpos, brush) {
   var line;
   if (brush == BRUSHERASE)
     line = ' '
-  else if (oldpos.col != newpos.col)
+  else if (oldpos.col != newpos.col && brush !== BRUSHDOUBLE)
     line = '-'
+  else if (oldpos.col != newpos.col && brush === BRUSHDOUBLE)
+    line = '='
   else if (oldpos.row != newpos.row)
     line = '|'
   else
