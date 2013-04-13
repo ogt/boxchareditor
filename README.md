@@ -22,7 +22,7 @@ and then use your keyboard arrows to move the yellow cursor around (you may need
 
 When you want to draw a line, keep the `SHIFT` key pressed while you move the arrows.
 The line will be using the `-` dash character to draw the line when moving horizontally and the  `|` bar character 
-to draw vertical lines. 
+to draw vertical lines.  Keep the `CMD` or `META` key pressed to draw a double line using the `=` equal character.
 
 When a horizontal and a vertical line cross it uses the `+` plus character. 
 There is no undo, but you can erase what you drew by pressing the `ALT` key while you move.

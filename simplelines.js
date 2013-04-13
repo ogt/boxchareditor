@@ -12,14 +12,18 @@ function updateTablesSimple(oldpos, newpos, brush) {
     }
   }
   function updateCursor(x,y,line) {
+    var newDir = line, oldDir = lines[y][x];
+    if (newDir == '=') newDir = '-';
+    if (oldDir == '=') oldDir = '-';
+
     if (brush == ' ')
       lines[y][x] = line;
     else if (lines[y][x] == '+')
-      return; // | or - on +
+      return; // | or - or = on +
     else if (lines[y][x] == ' ')
-      lines[y][x] = line; // - or | on ' '
-    else if (lines[y][x] != line)
-      lines[y][x] = '+'; // | on - or - on |
+      lines[y][x] = line; // - or = or | on ' '
+    else if (newDir != oldDir)
+      lines[y][x] = '+'; // | on -/= or -/= on |
     else
       return; // | on | or - on -
   }
