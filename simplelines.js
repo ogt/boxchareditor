@@ -30,9 +30,9 @@ function updateTablesSimple(oldpos, newpos, brush) {
   var line;
   if (brush == BRUSHERASE)
     line = ' '
-  else if (oldpos.col != newpos.col && brush !== BRUSHDOUBLE)
+  else if (oldpos.col != newpos.col && brush == BRUSHSINGLE)
     line = '-'
-  else if (oldpos.col != newpos.col && brush === BRUSHDOUBLE)
+  else if (oldpos.col != newpos.col && brush == BRUSHDOUBLE)
     line = '='
   else if (oldpos.row != newpos.row)
     line = '|'
@@ -44,9 +44,11 @@ function updateTablesSimple(oldpos, newpos, brush) {
     lines[oldpos.row][oldpos.col] = line;
   if (line == ' ' || lines[newpos.row][newpos.col] != '+')
     lines[newpos.row][newpos.col] = line;
-  for (var x = Math.min(oldpos.col,newpos.col)-1;x<=Math.max(oldpos.col,newpos.col)+1;x++ ){
-    for (var y = Math.min(oldpos.row,newpos.row)-1;y<=Math.max(oldpos.row,newpos.row)+1;y++ ){
-      updatePos(x,y)
+  if (brush == BRUSHERASE) {// neighbor fixups only on erase
+    for (var x = Math.min(oldpos.col,newpos.col)-1;x<=Math.max(oldpos.col,newpos.col)+1;x++ ){
+      for (var y = Math.min(oldpos.row,newpos.row)-1;y<=Math.max(oldpos.row,newpos.row)+1;y++ ){
+        updatePos(x,y)
+      }
     }
   }
 }
