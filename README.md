@@ -16,7 +16,20 @@ Simple utility to make it easier to create lines, line charts, org charts using 
             | | | |                                                             
             | | | |                                                             
             +-+ +-+                                                             
-                      
+
+
+or
+
+                                                                               
+      +====+=============+===================+                                  
+      |    |             |                   |                                  
+      +----+-------------+-------------------+                                  
+      |    |             |                   |                                  
+      |    |             |                   |                                  
+      |    |             |                   |                                  
+      +====+=============+===================+                                  
+                                                                                
+
 To try it go to http://ogt.github.com/boxchareditor
 and then use your keyboard arrows to move the yellow cursor around (you may need to click on it to give to the window focus).
 
