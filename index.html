@@ -37,6 +37,7 @@ body {
 <body onKeyDown="keyPressed(event)" >
 <script src="js/jquery.js"></script>
 <script src="js/myutil.js"></script>
+<script src="drawingengine.js"></script>
 <script src="simplelines.js"></script>
 
 
@@ -71,107 +72,69 @@ function assert( outcome, description ) {
 
 <script>
 
+var NOBRUSH = ' ';
+var BRUSHSINGLE = '-';
+var BRUSHDOUBLE = '=';
+var BRUSHTHICK = '~';
+var BRUSHERASE = '#';
+
+
 var model = {
-  bufferRows : 24,
-  bufferLength : 80,
+  gridRows : 24,
+  gridCols : 80,
   fontFamily : 'courier' ,
   fontSize : '12',
   speed : 1,
   type : 'simple',
 }
-var cursor = {
-  row : 0,
-  col : 0
-}
-var lines = [];
+var lines = []
+var cursor = {}
 
-var BRUSHSINGLE = '1';
-var BRUSHDOUBLE = '2';
-var BRUSHTHICK = '3';
-var BRUSHERASE = '#';
+
 
 function restart() {
   unsortedKeys(model).forEach(function(field) { if ($('#'+field).val()) model[field] = $('#'+field).val() })
-  cursor.row = 0
-  cursor.col = 0
-  initTables()
+  var state = eng_reset(model)
+//  assert(false,JSON.stringify(state))
+  lines = state.lines
+  cursor = state.cursor
   redrawModel()
 }
-
-function left() {
-  if (cursor.col > 0) cursor.col--
-}
-
-function right() {
-  if (cursor.col < model.bufferLength - 1) cursor.col++
-}
-
-function up() {
-  if (cursor.row > 0) cursor.row--
-}
-
-function down() {
-  if (cursor.row < model.bufferRows - 1) cursor.row++
-}
-
-function move(direction, speed, brush) {
-  //evtobj.altKey || evtobj.ctrlKey || evtobj.shiftKey
-  //var brush = if (e
-  speed = speed || model.speed
-  for (var i=0; i<speed; i++) {
-    var oldpos = {col: cursor.col, row: cursor.row};
-    direction();
-    var newpos = {col: cursor.col, row: cursor.row};
-//    alert('direction : '+direction+' oldpos : '+JSON.stringify(oldpos) + ' newpos : '+JSON.stringify(newpos) + ' brush : '+brush)
-    if (brush) {
-      if (model.type == 'simple') {
-        updateTablesSimple(oldpos,newpos, brush);
-      }
-
-    }
-    fastRedrawModel();
-  }
-}
-
-// handle left and right arrows
-// http://stackoverflow.com/questions/3691461/remove-key-press-delay-in-javascript
 
 function keyPressed(e) {
   var LEFTARROW = 37
   var UPARROW = 38
   var RIGHTARROW = 39
   var DOWNARROW = 40
-  var brush = 0
-
-  if (e.shiftKey) brush = BRUSHSINGLE;
-  if (e.altKey) brush = BRUSHERASE;
-  if (e.metaKey) brush = BRUSHDOUBLE;
-  var speed = $('#speed').val() || model.speed;
+  var dir;
   switch (e.keyCode) {
     case LEFTARROW :
-      move(left, speed,brush); break
+      dir = 'L'; break;
     case RIGHTARROW :
-      move(right, speed, brush); break
-    case UPARROW :
-      move(up, speed, brush); break
+      dir = 'R'; break;
+    case UPARROW : 
+      dir = 'U'; break;
     case DOWNARROW :
-      move(down, speed, brush); break
+      dir = 'D'; break;
     default:
   }
+  var brush = NOBRUSH
+  if (e.shiftKey) brush = BRUSHSINGLE;
+  if (e.altKey) brush = BRUSHERASE;
+  if (e.shiftKey && e.metaKey) brush = BRUSHDOUBLE;
+
+  var speed = $('#speed').val() || model.speed;
+  
+  var state = eng_move(model,{ lines : lines, cursor : cursor }, [dir,brush,speed].join(':'))
+
+  lines = state.lines
+  cursor = state.cursor
+  fastRedrawModel();
 }
 
-function initTables() {
-  for (var i=0;i<model.bufferRows;i++) {
-    lines[i] = []
-    for (var j=0;j<model.bufferLength;j++){
-      lines[i][j] = ' ';
-    }
-  }
-}
-
-function drawBuffer() {
+function drawGrid() {
   var d  = $('<div>')
-  for (var i=0;i<model.bufferRows;i++) {
+  for (var i=0;i<model.gridRows;i++) {
     var s = lines[i].join('');
     var p;
     if (i == cursor.row ) {
@@ -211,20 +174,20 @@ function drawControlPanel() {
   d.append($('<button type="button" onclick="move(right)">Right</button>'))
   d.append($('<button type="button" onclick="move(up)">Up</button>'))
   d.append($('<button type="button" onclick="move(down)">Down</button>'))
-  d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw single lines, Cmd/Meta for double lines. Press Alt to Erase'))
+  d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw single lines, Shift+Cmd/Meta for double lines. Press Alt to Erase'))
   d.append(drawModelEditor())
   d.append($('<a href="https://github.com/ogt/boxchareditor"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>'));
   return d;
 }
 
 function fastRedrawModel() {
-   $('#buffer').empty().append(drawBuffer)
+   $('#grid').empty().append(drawGrid())
 }
 
 function redrawModel() {
   $('.content').empty().append($('<p class="header">').text('A box character editor'))
   $('.content').append($('<hr/>'))
-  $('.content').append($('<div id="buffer" />'))
+  $('.content').append($('<div id="grid" />'))
   $('.content').append($('<hr/>'))
   $('.content').append(drawControlPanel())
   fastRedrawModel();
