@@ -1,4 +1,7 @@
 Box drawing character utility:
+======================
+[![Build Status](https://secure.travis-ci.org/ogt/boxchareditor.png?branch=gh-pages)](http://travis-ci.org/ogt/boxchareditor)
+
 
 Simple utility to make it easier to create lines, line charts, org charts using plain text characters.
 
