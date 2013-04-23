@@ -3,7 +3,7 @@ var grid = require('../lib/grid_utils.js');
 
 var test = require('tap').test;
 
-function do_test(t,input,output,moves) {
+function do_test(input,output,moves) {
   var model = {
     gridRows : input.length,
     gridCols : input[0].length,
@@ -12,7 +12,7 @@ function do_test(t,input,output,moves) {
   var init_state = eng.reset(model);
   init_state.lines = grid.from_string(input.join('\n'))
   var state = eng.move(model,init_state, moves);
-  t.equal(grid.to_string(state.lines) , output.join('\n'));
+  return [grid.to_string(state.lines) , output.join('\n')];
 }
 
 test('drawing a 2x2 square', function (t) {
@@ -32,7 +32,9 @@ test('drawing a 2x2 square', function (t) {
     '                   '
     ];
   var moves = 'D: :1,R: :10,R:-:1,D:-:1,L:-:1,U:-:1';
-  do_test(t,input,output,moves);
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
   t.end();
 });
 
@@ -57,7 +59,9 @@ test('drawing a 3x3 square with double line', function (t) {
     '                   '
     ];
   var moves = 'D: :1,R: :5,R:=:5,D:-:3,L:-:5,U:-:3';
-  do_test(t,input,output,moves);
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
   t.end();
 });
 
@@ -71,7 +75,10 @@ test('overwriting a single line with double line', function (t) {
   var output = [
     '  -===---          ',
     ];
-  do_test(t,input,output,'R: :3,R:=:2')
+  var moves = 'R: :3,R:=:2';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
   t.end();
 });
 
@@ -92,7 +99,9 @@ test('erasing top half a 2x2 square', function (t) {
     '                   '
     ];
   var moves = 'D: :1,R: :10,R:#:2';
-  do_test(t,input,output,moves);
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
   t.end();
 });
 
@@ -113,7 +122,9 @@ test('erasing left half a 2x2 square', function (t) {
     '                   '
     ];
   var moves = 'D: :1,R: :10,D:#:2';
-  do_test(t,input,output,moves);
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
   t.end();
 });
 
@@ -130,7 +141,9 @@ test('writing/erasing at edge of buffer', function (t) {
     '| ',
     ];
   var moves = 'R: :1,D:#:1,U: :1,L:-:1';
-  do_test(t,input,output,moves);
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
   t.end();
 });
 
@@ -147,6 +160,8 @@ test('testing erasing and reverting to simple or double line', function (t) {
     '----======'
   ];
   var moves = 'R:#:20';
-  do_test(t,input,output,moves);
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
   t.end();
 });
