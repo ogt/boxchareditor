@@ -88,5 +88,3 @@ To make local changes:
 ```
 
 If you want an enhancement feel free to add an issue.
-
-[Code coverage information](cover_html/index.html)
