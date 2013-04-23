@@ -4,7 +4,7 @@ eng = require('./drawingengine.js');
 brushes = require('./brushes.js')
 
 },{"./drawingengine.js":2,"./brushes.js":3}],3:[function(require,module,exports){
-var module = module.exports = (function () {
+module = module.exports = (function () {
 
 var _ = {}
 
@@ -48,7 +48,7 @@ return _;
 //var printf = require('printf');
 var brushes = require('./brushes.js')
 
-var module = module.exports = (function () {
+module = module.exports = (function () {
 
 var _ = {}
 
@@ -132,7 +132,6 @@ function move(model,s,direction, speed, brush) {
 return _;
 
 })();
-
 // end of engine
 
 },{"./simplelines.js":4,"./brushes.js":3}],4:[function(require,module,exports){
@@ -170,9 +169,7 @@ function updateGrid(model,s,oldpos, newpos, brush) {
     if (newDir == '=') newDir = '-';
     if (oldDir == '=') oldDir = '-';
 
-    if (brush == ' ')
-      s.lines[y][x] = line;
-    else if (s.lines[y][x] == '+')
+    if (s.lines[y][x] == '+')
       return; // | or - or = on +
     else if (s.lines[y][x] == ' ')
       s.lines[y][x] = line; // - or = or | on ' '
@@ -183,15 +180,13 @@ function updateGrid(model,s,oldpos, newpos, brush) {
   }
   var line;
   if (brush == brushes.BRUSHERASE)
-    line = ' '
+    line = ' ';
   else if (oldpos.col != newpos.col && brush == brushes.BRUSHSINGLE)
-    line = '-'
+    line = '-';
   else if (oldpos.col != newpos.col && brush == brushes.BRUSHDOUBLE)
-    line = '='
+    line = '=';
   else if (oldpos.row != newpos.row)
-    line = '|'
-  else
-    return;
+    line = '|';
   updateCursor(model,s,oldpos.col,oldpos.row, line);
   updateCursor(model,s,newpos.col,newpos.row, line);
   if (line == ' ' || s.lines[oldpos.row][oldpos.col] != '+')
