@@ -1,9 +1,9 @@
 ;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
-eng = require('./lib/drawingengine.js');
+eng = require('./drawingengine.js');
 
-brushes = require('./lib/brushes.js')
+brushes = require('./brushes.js')
 
-},{"./lib/drawingengine.js":2,"./lib/brushes.js":3}],3:[function(require,module,exports){
+},{"./drawingengine.js":2,"./brushes.js":3}],3:[function(require,module,exports){
 var module = module.exports = (function () {
 
 var _ = {}
@@ -135,7 +135,7 @@ return _;
 
 // end of engine
 
-},{"./brushes.js":3,"./simplelines.js":4}],4:[function(require,module,exports){
+},{"./simplelines.js":4,"./brushes.js":3}],4:[function(require,module,exports){
 module = module.exports =  updateGrid;
 
 var brushes = require('./brushes.js');
