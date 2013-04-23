@@ -37,8 +37,7 @@ body {
 <body onKeyDown="keyPressed(event)" >
 <script src="js/jquery.js"></script>
 <script src="js/myutil.js"></script>
-<script src="drawingengine.js"></script>
-<script src="simplelines.js"></script>
+<script src="static/bundle.js"></script>
 
 
 <!-- TEST FRAMEWORK BEGINS -->
@@ -72,12 +71,6 @@ function assert( outcome, description ) {
 
 <script>
 
-var NOBRUSH = ' ';
-var BRUSHSINGLE = '-';
-var BRUSHDOUBLE = '=';
-var BRUSHTHICK = '~';
-var BRUSHERASE = '#';
-
 
 var model = {
   gridRows : 24,
@@ -94,7 +87,7 @@ var cursor = {}
 
 function restart() {
   unsortedKeys(model).forEach(function(field) { if ($('#'+field).val()) model[field] = $('#'+field).val() })
-  var state = eng_reset(model)
+  var state = eng.reset(model)
 //  assert(false,JSON.stringify(state))
   lines = state.lines
   cursor = state.cursor
@@ -118,14 +111,14 @@ function keyPressed(e) {
       dir = 'D'; break;
     default:
   }
-  var brush = NOBRUSH
-  if (e.shiftKey) brush = BRUSHSINGLE;
-  if (e.altKey) brush = BRUSHERASE;
-  if (e.shiftKey && e.metaKey) brush = BRUSHDOUBLE;
+  var brush = brushes.NOBRUSH
+  if (e.shiftKey) brush = brushes.BRUSHSINGLE;
+  if (e.altKey) brush = brushes.BRUSHERASE;
+  if (e.shiftKey && e.metaKey) brush = brushes.BRUSHDOUBLE;
 
   var speed = $('#speed').val() || model.speed;
   
-  var state = eng_move(model,{ lines : lines, cursor : cursor }, [dir,brush,speed].join(':'))
+  var state = eng.move(model,{ lines : lines, cursor : cursor }, [dir,brush,speed].join(':'))
 
   lines = state.lines
   cursor = state.cursor

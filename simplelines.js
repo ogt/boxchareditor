@@ -1,9 +1,12 @@
-function updateTablesSimple(model,s,oldpos, newpos, brush) {
+module = module.exports =  updateGrid;
+
+var brushes = require('./brushes.js');
+
+function updateGrid(model,s,oldpos, newpos, brush) {
   function updatePos(model,s,x,y) {
     if (x < 0 || y < 0) return;
     if (y >= model.gridRows || x >=model.gridCols) return;
     if (s.lines[y][x] == '+') {
-      // check if should become '|'
       if (   (x == 0                || ' |'.indexOf(s.lines[y][x-1]) != -1)  && 
              (x == model.gridCols-1 || ' |'.indexOf(s.lines[y][x+1]) != -1)
          )  
@@ -13,15 +16,17 @@ function updateTablesSimple(model,s,oldpos, newpos, brush) {
              (y == model.gridRows-1 || ' -='.indexOf(s.lines[y+1][x]) != -1)
          )  {
         // need to revert to - or = . Will need to look left or right to decide
-        if (x>0 && s.lines[y][x-1] != ' ') {
-          s.lines[y][x] = s.lines[y][x-1];
+        if ((x>0 && '='.indexOf(s.lines[y][x-1]) != -1 ) ||
+            (       '='.indexOf(s.lines[y][x+1]) != -1)
+            ) {
+          s.lines[y][x] = '=';
         }
-        else if (s.lines[y][x+1] != ' ') {
-          s.lines[y][x] = s.lines[y][x+1];
-        }
+        else
+          s.lines[y][x] = '-';
       }
     }
   }
+
   function updateCursor(model,s,x,y,line) {
     var newDir = line, oldDir = s.lines[y][x];
     if (newDir == '=') newDir = '-';
@@ -39,11 +44,11 @@ function updateTablesSimple(model,s,oldpos, newpos, brush) {
       return; // | on | or - on -
   }
   var line;
-  if (brush == BRUSHERASE)
+  if (brush == brushes.BRUSHERASE)
     line = ' '
-  else if (oldpos.col != newpos.col && brush == BRUSHSINGLE)
+  else if (oldpos.col != newpos.col && brush == brushes.BRUSHSINGLE)
     line = '-'
-  else if (oldpos.col != newpos.col && brush == BRUSHDOUBLE)
+  else if (oldpos.col != newpos.col && brush == brushes.BRUSHDOUBLE)
     line = '='
   else if (oldpos.row != newpos.row)
     line = '|'
@@ -55,7 +60,7 @@ function updateTablesSimple(model,s,oldpos, newpos, brush) {
     s.lines[oldpos.row][oldpos.col] = line;
   if (line == ' ' || s.lines[newpos.row][newpos.col] != '+')
     s.lines[newpos.row][newpos.col] = line;
-  if (brush == BRUSHERASE) {// neighbor fixups only on erase
+  if (brush == brushes.BRUSHERASE) {// neighbor fixups only on erase
     for (var x = Math.min(oldpos.col,newpos.col)-1;x<=Math.max(oldpos.col,newpos.col)+1;x++ ){
       for (var y = Math.min(oldpos.row,newpos.row)-1;y<=Math.max(oldpos.row,newpos.row)+1;y++ ){
         updatePos(model,s,x,y)

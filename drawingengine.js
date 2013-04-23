@@ -24,7 +24,14 @@
 
 // exported functions eng_reset and eng_move
 
-function eng_reset(model) {
+//var printf = require('printf');
+var brushes = require('./brushes.js')
+
+var module = module.exports = (function () {
+
+var _ = {}
+
+_.reset = function (model) {
   var state = {
     cursor : {
       row : 0,
@@ -41,7 +48,7 @@ function eng_reset(model) {
   return state;
 }
 
-function eng_move(model,s, moves) {
+_.move = function (model,s, moves) {
   //alert(moves);
   var steps = moves.split(',')
   for (var i=0;i<steps.length;i++) {
@@ -62,6 +69,8 @@ function eng_move(model,s, moves) {
   return s;
 }
 
+
+
 // internal functions
 
 function left(model,s) {
@@ -80,15 +89,17 @@ function down(model,s) {
   if (s.cursor.row < model.gridRows - 1) s.cursor.row++
 }
 
+var simpleUpdate = require('./simplelines.js');
+
 function move(model,s,direction, speed, brush) {
   for (var i=0; i<speed; i++) {
     var oldpos = {col: s.cursor.col, row: s.cursor.row};
     direction(model,s);
     var newpos = {col: s.cursor.col, row: s.cursor.row};
-//    alert('direction : '+direction+' oldpos : '+JSON.stringify(oldpos) + ' newpos : '+JSON.stringify(newpos) + ' brush : '+brush)
-    if (brush != NOBRUSH) {
-      if (model.type == 'simple') {
-        updateTablesSimple(model,s,oldpos,newpos, brush);
+//    console.log(printf('direction : %s, oldpos : %s, newpos = %s, brush = %s\n',direction,JSON.stringify(oldpos),JSON.stringify(newpos),brush));
+    if (brush != brushes.NOBRUSH) {
+      if (!model.type || model.type == 'simple') {
+        simpleUpdate(model,s,oldpos,newpos, brush);
       }
     }
   }
@@ -97,6 +108,8 @@ function move(model,s,direction, speed, brush) {
 // handle left and right arrows
 // http://stackoverflow.com/questions/3691461/remove-key-press-delay-in-javascript
 
+return _;
 
+})();
 
 // end of engine

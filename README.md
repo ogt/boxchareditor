@@ -74,4 +74,15 @@ For fonts you shoud probably stick to fixed width fonts.
 The purpose of the utility is to allow you to draw relative complex tables/org charts 
 that you then copy and paste into your editor.
 
+To make local changes:
+
+```
+> hub clone ogt/boxchareditor && cd boxchareditor
+> npm install
+> # make any changes you want
+> make   #recreates static/bundle.js
+> npm test # confirm tests run fine
+> open index.html
+```
+
 If you want an enhancement feel free to add an issue.
