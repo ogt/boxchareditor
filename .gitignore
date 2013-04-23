@@ -1,3 +1,4 @@
 .*
 !/.gitignore
+cover_html/
 node_modules/

@@ -134,7 +134,7 @@ return _;
 })();
 // end of engine
 
-},{"./simplelines.js":4,"./brushes.js":3}],4:[function(require,module,exports){
+},{"./brushes.js":3,"./simplelines.js":4}],4:[function(require,module,exports){
 module = module.exports =  updateGrid;
 
 var brushes = require('./brushes.js');
