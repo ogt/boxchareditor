@@ -7,11 +7,11 @@
   },
   "main": "test/test1.js",
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "tap ./test/*.js"
   },
   "dependencies": {},
   "devDependencies": {
-    "tap": "~0.2.5",
+    "tap": "~0.4.0",
     "browserify": ""
   }
 }
