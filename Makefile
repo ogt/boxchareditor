@@ -1,3 +1,12 @@
-all:
-	node_modules/.bin/browserify lib/main.js -o static/bundle.js
-	cover run test/test1.js;cover report;cover report html
+COVER=node_modules/.bin/cover
+BROWSERIFY=node_modules/.bin/browserify
+
+cover: 
+	$(COVER) run test/test1.js
+	$(COVER) report
+	$(COVER) report html
+
+bundle:
+	$(BROWSERIFY) lib/main.js -o static/bundle.js
+
+all: cover, bundle
