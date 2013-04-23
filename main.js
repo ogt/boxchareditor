@@ -1,3 +1,3 @@
-eng = require('./drawingengine.js');
+eng = require('./lib/drawingengine.js');
 
-brushes = require('./brushes.js')
+brushes = require('./lib/brushes.js')
