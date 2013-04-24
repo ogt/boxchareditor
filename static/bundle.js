@@ -1,12 +1,14 @@
 ;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
+(function(){/*global eng:true, brushes:true */
 eng = require('./drawingengine.js');
 
-brushes = require('./brushes.js')
+brushes = require('./brushes.js');
 
+})()
 },{"./drawingengine.js":2,"./brushes.js":3}],3:[function(require,module,exports){
 module = module.exports = (function () {
 
-var _ = {}
+var _ = {};
 
 _.NOBRUSH = ' ';
 _.BRUSHSINGLE = '-';
@@ -46,11 +48,11 @@ return _;
 // exported functions eng_reset and eng_move
 
 //var printf = require('printf');
-var brushes = require('./brushes.js')
+var brushes = require('./brushes.js');
 
 module = module.exports = (function () {
 
-var _ = {}
+var _ = {};
 
 _.reset = function (model) {
   var state = {
@@ -58,25 +60,25 @@ _.reset = function (model) {
       row : 0,
       col : 0
     },
-    lines : [],
-  }
+    lines : []
+  };
   for (var i=0;i<model.gridRows;i++) {
-    state.lines[i] = []
+    state.lines[i] = [];
     for (var j=0;j<model.gridCols;j++){
       state.lines[i][j] = ' ';
     }
   }
   return state;
-}
+};
 
 _.move = function (model,s, moves) {
   //alert(moves);
-  var steps = moves.split(',')
+  var steps = moves.split(',');
   for (var i=0;i<steps.length;i++) {
     var step = steps[i].split(':');
     var dir = step[0], 
       brush = step[1] || ' ', 
-      speed = parseInt(step[2]) || 1;
+      speed = parseInt(step[2],10) || 1;
     switch (dir) {
       case 'L' : dir = left; break;
       case 'R' : dir = right; break;
@@ -85,29 +87,29 @@ _.move = function (model,s, moves) {
       default : 
     }
 
-    if (dir) move(model,s,dir, speed, brush)
+    if (dir) move(model,s,dir, speed, brush);
   }
   return s;
-}
+};
 
 
 
 // internal functions
 
 function left(model,s) {
-  if (s.cursor.col > 0) s.cursor.col--
+  if (s.cursor.col > 0) s.cursor.col--;
 }
 
 function right(model,s) {
-  if (s.cursor.col < model.gridCols - 1) s.cursor.col++
+  if (s.cursor.col < model.gridCols - 1) s.cursor.col++;
 }
 
 function up(model,s) {
-  if (s.cursor.row > 0) s.cursor.row--
+  if (s.cursor.row > 0) s.cursor.row--;
 }
 
 function down(model,s) {
-  if (s.cursor.row < model.gridRows - 1) s.cursor.row++
+  if (s.cursor.row < model.gridRows - 1) s.cursor.row++;
 }
 
 var simpleUpdate = require('./simplelines.js');
@@ -144,12 +146,12 @@ function updateGrid(model,s,oldpos, newpos, brush) {
     if (x < 0 || y < 0) return;
     if (y >= model.gridRows || x >=model.gridCols) return;
     if (s.lines[y][x] == '+') {
-      if (   (x == 0                || ' |'.indexOf(s.lines[y][x-1]) != -1)  && 
+      if (   (x === 0                || ' |'.indexOf(s.lines[y][x-1]) != -1)  && 
              (x == model.gridCols-1 || ' |'.indexOf(s.lines[y][x+1]) != -1)
          )  
         s.lines[y][x] = '|';
       // check if should become '-' or '='
-      if (   (y == 0                || ' -='.indexOf(s.lines[y-1][x]) != -1)  && 
+      if (   (y === 0                || ' -='.indexOf(s.lines[y-1][x]) != -1)  && 
              (y == model.gridRows-1 || ' -='.indexOf(s.lines[y+1][x]) != -1)
          )  {
         // need to revert to - or = . Will need to look left or right to decide
@@ -196,7 +198,7 @@ function updateGrid(model,s,oldpos, newpos, brush) {
   if (brush == brushes.BRUSHERASE) {// neighbor fixups only on erase
     for (var x = Math.min(oldpos.col,newpos.col)-1;x<=Math.max(oldpos.col,newpos.col)+1;x++ ){
       for (var y = Math.min(oldpos.row,newpos.row)-1;y<=Math.max(oldpos.row,newpos.row)+1;y++ ){
-        updatePos(model,s,x,y)
+        updatePos(model,s,x,y);
       }
     }
   }

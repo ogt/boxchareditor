@@ -1,18 +1,22 @@
 TAP=node_modules/.bin/tap
 COVER=node_modules/.bin/cover
 BROWSERIFY=node_modules/.bin/browserify
+LINT=node_modules/.bin/jshint
 
-always:
+all: cover bundle test lint
+.PHONY : test
 
 cover: 
 	$(COVER) run test/test1.js
 	$(COVER) report
 	$(COVER) report html
 
-test: always
+test: 
 	$(TAP) test/*js
 
 bundle:
 	$(BROWSERIFY) lib/main.js -o static/bundle.js
 
-all: cover, bundle, test
+lint:
+	$(LINT) lib/*.js
+  
