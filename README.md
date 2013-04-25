@@ -1,9 +1,13 @@
-Box drawing character utility:
+Box drawing character utility
 ======================
 [![Build Status](https://travis-ci.org/ogt/boxchareditor.png?branch=gh-pages)](https://travis-ci.org/ogt/boxchareditor)
 
+## About
 Simple utility to make it easier to create lines, line charts, org charts using plain text characters.
 
+## Usage
+
+Here are some examples of what you can create:
                                                                         
               +--+                                                              
               |  |                                                              
@@ -54,6 +58,8 @@ or
              +----+       +----+       +----+                                                                                                                   
                                                     
 
+## Instructions
+
 To try it go to http://ogt.github.com/boxchareditor
 and then use your keyboard arrows to move the yellow cursor around (you may need to click on it to give to the window focus).
 
@@ -75,6 +81,8 @@ For fonts you shoud probably stick to fixed width fonts.
 
 The purpose of the utility is to allow you to draw relative complex tables/org charts 
 that you then copy and paste into your editor.
+
+## Installation 
 
 To make local changes:
 
