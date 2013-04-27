@@ -9,10 +9,10 @@ Simple utility to make it easier to create lines, line charts, org charts using 
 
 ## Usage
 
+![Example](resources/example.gif "Pressing Shift, Command and ALt arrows draws single double lines or erases")
+
 Here are some examples of what you can create:
 
-![Example](resources/example.gif "Pressing Shift, Command and ALt arrows draws single double lines or erases")
-                                                                        
               +--+                                                              
               |  |                                                              
               ++++                                                              
