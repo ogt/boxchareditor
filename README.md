@@ -69,10 +69,11 @@ and then use your keyboard arrows to move the yellow cursor around (you may need
 
 When you want to draw a line, keep the `SHIFT` key pressed while you move the arrows.
 The line will be using the `-` dash character to draw the line when moving horizontally and the  `|` bar character 
-to draw vertical lines.  Keep the `SHIFT`  and `COMMAND` or `META` keys pressed to draw a double line using the `=` equal character.
+to draw vertical lines.  Keep the `SHIFT`  and `COMMAND` (for macs) or `META` (for pcs) keys pressed to draw a double line using the `=` equal character.
 
 When a horizontal and a vertical line cross it uses the `+` plus character. 
-There is no undo, but you can erase what you drew by pressing the `ALT` key while you move.
+There is no undo, but you can erase what you drew by pressing the `ALT` key while you move. Erasing is "smart", i.e., it looks
+at its neighboring cells and fixes anything that need to be fixed after the erase.
 
 Pressing the Restart button does the obvious. 
 There are a few configuration variables that you can change - you will need to press Restart for them to take effect.
