@@ -88,13 +88,21 @@ that you then copy and paste into your editor.
 
 ## Installation 
 
+To run locally:
+
+```
+> hub clone ogt/boxchareditor && cd boxchareditor
+> npm install
+> open index.html
+```
+
 To make local changes:
 
 ```
 > hub clone ogt/boxchareditor && cd boxchareditor
 > npm install
 > # make any changes you want
-> make   #recreates static/bundle.js
+> make bundle  #recreates static/bundle.js
 > npm test # confirm tests run fine
 > open index.html
 ```
