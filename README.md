@@ -91,22 +91,18 @@ that you then copy and paste into your editor.
 
 To run locally:
 
-```
-> hub clone ogt/boxchareditor && cd boxchareditor
-> npm install
-> open index.html
-```
+    > hub clone ogt/boxchareditor && cd boxchareditor
+    > npm install
+    > open index.html
 
 To make local changes:
 
-```
-> hub clone ogt/boxchareditor && cd boxchareditor
-> npm install
-> # make any changes you want
-> make bundle  #recreates static/bundle.js
-> npm test # confirm tests run fine
-> open index.html
-```
+    > hub clone ogt/boxchareditor && cd boxchareditor
+    > npm install
+    > # make any changes you want
+    > make bundle  #recreates static/bundle.js
+    > npm test # confirm tests run fine
+    > open index.html
 
 If you want an enhancement feel free to add an issue.
 
