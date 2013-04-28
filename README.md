@@ -122,8 +122,8 @@ To run the tap tests
 
     > make test # or just npm test
 
-
-If you want an enhancement feel free to add an issue.
+Its a good idea to run `make all` or just `make` before pushing to make sure that everything has been updated.
+If you want an enhancement feel free to add an issue to github.com/ogt/boxchareditor
 
 ## SEE ALSO 
 

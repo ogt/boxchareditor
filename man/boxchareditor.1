@@ -1,20 +1,8 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
- \fIhttps://travis\-ci\.org/ogt/boxchareditor\fR
-.
-.SH "SYNOPSIS"
-Simple utility to make it easier to create lines, line charts, org charts using plain text characters\.
-.
-.SH "EXAMPLES"
-.
-.P
-Here are some examples of what you can create:
-.
-.IP "" 4
-.
-.nf
+ _h_t_t_p_s_:_/_/_t_r_a_v_i_s_-_c_i_._o_r_g_/_o_g_t_/_b_o_x_c_h_a_r_e_d_i_t_o_r  Simple  utility to make
+it easier to create lines, line charts, org  charts  using  plain
+text characters.  Here are some examples of what you can create:
 
-          +\-\-+
+          +--+
           |  |
           ++++
            ||
@@ -23,134 +11,122 @@ Here are some examples of what you can create:
         |      |
         |      |
         +=+===++
-        | +\-+ |
+        | +-+ |
         | | | |
         | | | |
-        +\-+ +\-+
-.
-.fi
-.
-.IP "" 0
-.
-.P
+        +-+ +-+
 or
-.
-.IP "" 4
-.
-.nf
 
   +====+=============+===================+
   |    |             |                   |
-  +\-\-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-+
+  +----+-------------+-------------------+
   |    |             |                   |
   |    |             |                   |
   |    |             |                   |
   +====+=============+===================+
-.
-.fi
-.
-.IP "" 0
-.
-.P
 or
-.
-.IP "" 4
-.
-.nf
 
-               +\-\-\-\-\-\-\-\-\-+
+               +---------+
                |         |
-               +\-\-\-\-+\-\-\-\-+
+               +----+----+
                     |
-     +\-\-\-\-\-\-\-\-\-\-\-\-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-+
-  +\-\-+\-\-+        +\-\-+\-\-+      +\-\-+\-\-+
+     +--------------+------------+
+  +--+--+        +--+--+      +--+--+
   |     |        |     |      |     |
-  +\-\-+\-\-+        +\-\-+\-\-+      +\-\-+\-\-+
-     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
-     +\-\-\-+    |     +\-+    |     +\-+    |
-     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
+  +--+--+        +--+--+      +--+--+
+     |   +----+     | +----+     | +----+
+     +---+    |     +-+    |     +-+    |
+     |   +----+     | +----+     | +----+
      |              |            |
-     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
-     +\-\-\-+    |     +\-+    |     +\-+    |
-     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
+     |   +----+     | +----+     | +----+
+     +---+    |     +-+    |     +-+    |
+     |   +----+     | +----+     | +----+
      |              |            |
-     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
-     +\-\-\-+    |     +\-+    |     +\-+    |
-         +\-\-\-\-+       +\-\-\-\-+       +\-\-\-\-+
-.
-.fi
-.
-.IP "" 0
-.
-.SH "DESCRIPTION"
-To try it go to http://ogt\.github\.com/boxchareditor and then use your keyboard arrows to move the yellow cursor around (you may need to click on it to give to the window focus)\.
-.
-.P
-When you want to draw a line, keep the \fBSHIFT\fR key pressed while you move the arrows\. The line will be using the \fB\-\fR dash character to draw the line when moving horizontally and the \fB|\fR bar character to draw vertical lines\. Keep the \fBSHIFT\fR and \fBCOMMAND\fR (for macs) or \fBMETA\fR (for pcs) keys pressed to draw a double line using the \fB=\fR equal character\.
-.
-.P
-When a horizontal and a vertical line cross it uses the \fB+\fR plus character\. There is no undo, but you can erase what you drew by pressing the \fBALT\fR key while you move\. Erasing is "smart", i\.e\., it looks at its neighboring cells and fixes anything that need to be fixed after the erase\.
-.
-.P
-Pressing the Restart button does the obvious\. There are a few configuration variables that you can change \- you will need to press Restart for them to take effect\. One of the configuration variables is \fBspeed\fR \- speed 2 means that a any arrow key pressed is repeated 2 times \- so the moving/drawing happens faster\.
-.
-.P
-The drawing happens against an invisible canvas \- you control the width and height of it through configuration parameters\. You cannot draw outside the canvas\. For fonts you shoud probably stick to fixed width fonts\.
-.
-.P
-The purpose of the utility is to allow you to draw relative complex tables/org charts that you then copy and paste into your editor\.
-.
-.SH "INSTALLATION"
-To run locally:
-.
-.IP "" 4
-.
-.nf
+     |   +----+     | +----+     | +----+
+     +---+    |     +-+    |     +-+    |
+         +----+       +----+       +----+
+To  try it go to http://ogt.github.com/boxchareditor and then use
+your keyboard arrows to move the yellow cursor  around  (you  may
+need  to click on it to give to the window focus).  When you want
+to draw a line, keep the SSHHIIFFTT key pressed while you move the ar-
+rows.  The  line  will  be using the -- dash character to draw the
+line when moving horizontally and the ||  bar  character  to  draw
+vertical  lines.  Keep  the  SSHHIIFFTT and CCOOMMMMAANNDD (for macs) or MMEETTAA
+(for pcs) keys pressed to draw a double line using  the  ==  equal
+character.   When  a horizontal and a vertical line cross it uses
+the ++ plus character. There is no undo, but you  can  erase  what
+you  drew  by  pressing  the  AALLTT  key while you move. Erasing is
+"smart", i.e., it looks at its neighboring cells and  fixes  any-
+thing  that  need  to  be  fixed  after  the erase.  Pressing the
+Restart button does the obvious. There are  a  few  configuration
+variables  that  you  can change - you will need to press Restart
+for them to take effect. One of the  configuration  variables  is
+ssppeeeedd  - speed 2 means that a any arrow key pressed is repeated 2
+times - so the moving/drawing happens faster.  The  drawing  hap-
+pens  against  an  invisible  canvas  - you control the width and
+height of it through configuration parameters.  You  cannot  draw
+outside  the  canvas. For fonts you shoud probably stick to fixed
+width fonts.  The purpose of the utility is to allow you to  draw
+relative  complex  tables/org charts that you then copy and paste
+into your editor.  To run locally:
 
 > hub clone ogt/boxchareditor && cd boxchareditor
 > npm install
-> open index\.html
-.
-.fi
-.
-.IP "" 0
-.
-.P
+> open index.html
 To make local changes:
-.
-.IP "" 4
-.
-.nf
 
 > hub clone ogt/boxchareditor && cd boxchareditor
 > npm install
 > # make any changes you want
-> make bundle  #recreates static/bundle\.js
-> npm test # confirm tests run fine
-> open index\.html
-.
-.fi
-.
-.IP "" 0
-.
-.P
-If you want an enhancement feel free to add an issue\.
-.
-.SH "SEE ALSO"
-https://github\.com/LearnBoost/cli\-table, https://github\.com/substack/node\-multimeter, https://github\.com/substack/picture\-tube
-.
-.SH "ACKNOWLEDGMENTS"
-.
-.IP "\(bu" 4
-The animated gif was created using keycastr \fIhttps://github\.com/sdeken/keycastr/\fR ,
-.
-.IP "\(bu" 4
-Quicktime Player and an online image converter \fIhttp://image\.online\-convert\.com/convert\-to\-gif\fR following the advice of github\.com/f \fIhttps://github\.com/f\fR @ HN \fIhttps://news\.ycombinator\.com/item?id=5613652\fR\.
-.
-.IP "" 0
-.
-.SH "COPYRIGHT"
-Odysseas Tsatalos, http://tsatalos\.gr
-.
-.SH "FILES"
-https://github\.com/ogt/boxchareditor
+> make bundle  #recreates static/bundle.js
+> make test # confirm tests run fine
+> open index.html
+To recreate the man page (if you don't have ruby's bbuunnddllee ggeemm iinn--
+ssttaall bbuunnddllee first)
+
+> bundle install
+> make man
+To get coverage report
+
+> make cover
+> open cover_html/index.html
+To run lint based on the included ..jjssiinniittrrcc spec
+
+> make lint
+To run the tap tests
+
+> make test # or just npm test
+Its  a  good  idea to run mmaakkee aallll or just mmaakkee before pushing to
+make sure that everything has been updated. If you  want  an  en-
+hancement feel free to add an issue to github.com/ogt/boxcharedi-
+tor                      https://github.com/LearnBoost/cli-table,
+https://github.com/substack/node-multimeter,
+https://github.com/substack/picture-tube  The  animated  gif  was
+created   using  keycastr  _h_t_t_p_s_:_/_/_g_i_t_h_u_b_._c_o_m_/_s_d_e_k_e_n_/_k_e_y_c_a_s_t_r_/  ,
+Quicktime Player and an online image  converter  _h_t_t_p_:_/_/_i_m_a_g_e_._o_n_-
+_l_i_n_e_-_c_o_n_v_e_r_t_._c_o_m_/_c_o_n_v_e_r_t_-_t_o_-_g_i_f    following    the   advice   of
+github.com/f  _h_t_t_p_s_:_/_/_g_i_t_h_u_b_._c_o_m_/_f  @  HN  _h_t_t_p_s_:_/_/_n_e_w_s_._y_c_o_m_b_i_n_a_-
+_t_o_r_._c_o_m_/_i_t_e_m_?_i_d_=_5_6_1_3_6_5_2.   Odysseas  Tsatalos, http://tsatalos.gr
+https://github.com/ogt/boxchareditor
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
