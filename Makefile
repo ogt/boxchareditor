@@ -3,9 +3,9 @@ COVER=node_modules/.bin/cover
 BROWSERIFY=node_modules/.bin/browserify
 LINT=node_modules/.bin/jshint
 #BUILDMAN=curl -F page=@- http://mantastic.herokuapp.com 
-BUILDMAN=ronn
+BUILDMAN=ronn -m
 
-all: cover bundle test lint
+all: cover bundle test lint man
 .PHONY : test, man
 
 

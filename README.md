@@ -101,8 +101,27 @@ To make local changes:
     > npm install
     > # make any changes you want
     > make bundle  #recreates static/bundle.js
-    > npm test # confirm tests run fine
+    > make test # confirm tests run fine
     > open index.html
+
+To recreate the man page (if you don't have ruby's `bundle` `gem instal bundle` first)
+
+    > bundle install
+    > make man
+
+To get coverage report
+
+    > make cover
+    > open cover_html/index.html
+
+To run lint based on the included `.jsinitrc` spec
+
+    > make lint
+
+To run the tap tests
+
+    > make test # or just npm test
+
 
 If you want an enhancement feel free to add an issue.
 
