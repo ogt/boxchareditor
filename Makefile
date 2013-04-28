@@ -10,7 +10,7 @@ all: cover bundle test lint man
 
 
 man: 
-	$(BUILDMAN)  < README.md > man/boxchareditor.1
+	$(BUILDMAN) README.md > man/boxchareditor.1
 
 cover: 
 	$(COVER) run test/test1.js
