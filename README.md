@@ -104,7 +104,7 @@ To make local changes:
     > make test # confirm tests run fine
     > open index.html
 
-To recreate the man page (if you don't have ruby's `bundle` `gem instal bundle` first)
+To recreate the man page (if you don't have ruby's `bundle` then do `gem instal bundle` first)
 
     > bundle install
     > make man
