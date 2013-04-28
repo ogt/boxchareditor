@@ -109,6 +109,5 @@ If you want an enhancement feel free to add an issue.
 ## Acknowledgments
 
 - The animated gif was created using [keycastr](https://github.com/sdeken/keycastr/) , 
-- Quicktime Player and an [online image converter](http://image.online-convert.com/convert-to-gif)
-- following the advice of [github.com/f](https://github.com/f) @ [HN](https://news.ycombinator.com/item?id=5613652).
+- Quicktime Player and an [online image converter](http://image.online-convert.com/convert-to-gif) following the advice of [github.com/f](https://github.com/f) @ [HN](https://news.ycombinator.com/item?id=5613652).
 
