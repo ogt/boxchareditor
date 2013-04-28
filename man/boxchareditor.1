@@ -1,0 +1,156 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+ \fIhttps://travis\-ci\.org/ogt/boxchareditor\fR
+.
+.SH "SYNOPSIS"
+Simple utility to make it easier to create lines, line charts, org charts using plain text characters\.
+.
+.SH "EXAMPLES"
+.
+.P
+Here are some examples of what you can create:
+.
+.IP "" 4
+.
+.nf
+
+          +\-\-+
+          |  |
+          ++++
+           ||
+     +==+==++==+==+
+     +==+      +==+
+        |      |
+        |      |
+        +=+===++
+        | +\-+ |
+        | | | |
+        | | | |
+        +\-+ +\-+
+.
+.fi
+.
+.IP "" 0
+.
+.P
+or
+.
+.IP "" 4
+.
+.nf
+
+  +====+=============+===================+
+  |    |             |                   |
+  +\-\-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-+
+  |    |             |                   |
+  |    |             |                   |
+  |    |             |                   |
+  +====+=============+===================+
+.
+.fi
+.
+.IP "" 0
+.
+.P
+or
+.
+.IP "" 4
+.
+.nf
+
+               +\-\-\-\-\-\-\-\-\-+
+               |         |
+               +\-\-\-\-+\-\-\-\-+
+                    |
+     +\-\-\-\-\-\-\-\-\-\-\-\-\-\-+\-\-\-\-\-\-\-\-\-\-\-\-+
+  +\-\-+\-\-+        +\-\-+\-\-+      +\-\-+\-\-+
+  |     |        |     |      |     |
+  +\-\-+\-\-+        +\-\-+\-\-+      +\-\-+\-\-+
+     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
+     +\-\-\-+    |     +\-+    |     +\-+    |
+     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
+     |              |            |
+     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
+     +\-\-\-+    |     +\-+    |     +\-+    |
+     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
+     |              |            |
+     |   +\-\-\-\-+     | +\-\-\-\-+     | +\-\-\-\-+
+     +\-\-\-+    |     +\-+    |     +\-+    |
+         +\-\-\-\-+       +\-\-\-\-+       +\-\-\-\-+
+.
+.fi
+.
+.IP "" 0
+.
+.SH "DESCRIPTION"
+To try it go to http://ogt\.github\.com/boxchareditor and then use your keyboard arrows to move the yellow cursor around (you may need to click on it to give to the window focus)\.
+.
+.P
+When you want to draw a line, keep the \fBSHIFT\fR key pressed while you move the arrows\. The line will be using the \fB\-\fR dash character to draw the line when moving horizontally and the \fB|\fR bar character to draw vertical lines\. Keep the \fBSHIFT\fR and \fBCOMMAND\fR (for macs) or \fBMETA\fR (for pcs) keys pressed to draw a double line using the \fB=\fR equal character\.
+.
+.P
+When a horizontal and a vertical line cross it uses the \fB+\fR plus character\. There is no undo, but you can erase what you drew by pressing the \fBALT\fR key while you move\. Erasing is "smart", i\.e\., it looks at its neighboring cells and fixes anything that need to be fixed after the erase\.
+.
+.P
+Pressing the Restart button does the obvious\. There are a few configuration variables that you can change \- you will need to press Restart for them to take effect\. One of the configuration variables is \fBspeed\fR \- speed 2 means that a any arrow key pressed is repeated 2 times \- so the moving/drawing happens faster\.
+.
+.P
+The drawing happens against an invisible canvas \- you control the width and height of it through configuration parameters\. You cannot draw outside the canvas\. For fonts you shoud probably stick to fixed width fonts\.
+.
+.P
+The purpose of the utility is to allow you to draw relative complex tables/org charts that you then copy and paste into your editor\.
+.
+.SH "INSTALLATION"
+To run locally:
+.
+.IP "" 4
+.
+.nf
+
+> hub clone ogt/boxchareditor && cd boxchareditor
+> npm install
+> open index\.html
+.
+.fi
+.
+.IP "" 0
+.
+.P
+To make local changes:
+.
+.IP "" 4
+.
+.nf
+
+> hub clone ogt/boxchareditor && cd boxchareditor
+> npm install
+> # make any changes you want
+> make bundle  #recreates static/bundle\.js
+> npm test # confirm tests run fine
+> open index\.html
+.
+.fi
+.
+.IP "" 0
+.
+.P
+If you want an enhancement feel free to add an issue\.
+.
+.SH "SEE ALSO"
+https://github\.com/LearnBoost/cli\-table, https://github\.com/substack/node\-multimeter, https://github\.com/substack/picture\-tube
+.
+.SH "ACKNOWLEDGMENTS"
+.
+.IP "\(bu" 4
+The animated gif was created using keycastr \fIhttps://github\.com/sdeken/keycastr/\fR ,
+.
+.IP "\(bu" 4
+Quicktime Player and an online image converter \fIhttp://image\.online\-convert\.com/convert\-to\-gif\fR following the advice of github\.com/f \fIhttps://github\.com/f\fR @ HN \fIhttps://news\.ycombinator\.com/item?id=5613652\fR\.
+.
+.IP "" 0
+.
+.SH "COPYRIGHT"
+Odysseas Tsatalos, http://tsatalos\.gr
+.
+.SH "FILES"
+https://github\.com/ogt/boxchareditor

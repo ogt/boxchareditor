@@ -3,11 +3,11 @@ Box drawing character utility
 
 [![Build Status](https://travis-ci.org/ogt/boxchareditor.png?branch=gh-pages)](https://travis-ci.org/ogt/boxchareditor)
 
-## About
+## SYNOPSIS
 
 Simple utility to make it easier to create lines, line charts, org charts using plain text characters.
 
-## Usage
+## EXAMPLES
 
 ![Example](resources/example.gif "Pressing Shift, Command and ALt arrows draws single double lines or erases")
 
@@ -62,7 +62,7 @@ or
              +----+       +----+       +----+                                                                                                                   
                                                     
 
-## Instructions
+## DESCRIPTION
 
 To try it go to http://ogt.github.com/boxchareditor
 and then use your keyboard arrows to move the yellow cursor around (you may need to click on it to give to the window focus).
@@ -87,7 +87,7 @@ For fonts you shoud probably stick to fixed width fonts.
 The purpose of the utility is to allow you to draw relative complex tables/org charts 
 that you then copy and paste into your editor.
 
-## Installation 
+## INSTALLATION 
 
 To run locally:
 
@@ -106,8 +106,22 @@ To make local changes:
 
 If you want an enhancement feel free to add an issue.
 
-## Acknowledgments
+## SEE ALSO 
+
+https://github.com/LearnBoost/cli-table, 
+https://github.com/substack/node-multimeter, 
+https://github.com/substack/picture-tube
+
+## ACKNOWLEDGMENTS
 
 - The animated gif was created using [keycastr](https://github.com/sdeken/keycastr/) , 
 - Quicktime Player and an [online image converter](http://image.online-convert.com/convert-to-gif) following the advice of [github.com/f](https://github.com/f) @ [HN](https://news.ycombinator.com/item?id=5613652).
+
+## COPYRIGHT
+
+Odysseas Tsatalos, http://tsatalos.gr
+
+## FILES
+
+https://github.com/ogt/boxchareditor
 
