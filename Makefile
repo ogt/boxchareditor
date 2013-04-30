@@ -6,7 +6,7 @@ LINT=node_modules/.bin/jshint
 BUILDMAN=ronn -m
 
 all: cover bundle test lint man
-.PHONY : test, man
+.PHONY : test man
 
 
 man: 
