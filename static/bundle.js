@@ -112,8 +112,6 @@ function down(model,s) {
   if (s.cursor.row < model.gridRows - 1) s.cursor.row++;
 }
 
-var simpleUpdate = require('./simplelines.js');
-
 function move(model,s,direction, speed, brush) {
   for (var i=0; i<speed; i++) {
     var oldpos = {col: s.cursor.col, row: s.cursor.row};
@@ -121,8 +119,13 @@ function move(model,s,direction, speed, brush) {
     var newpos = {col: s.cursor.col, row: s.cursor.row};
 //    console.log(printf('direction : %s, oldpos : %s, newpos = %s, brush = %s\n',direction,JSON.stringify(oldpos),JSON.stringify(newpos),brush));
     if (brush != brushes.NOBRUSH) {
+      var updateFunction = null;
       if (!model.type || model.type == 'simple') {
-        simpleUpdate(model,s,oldpos,newpos, brush);
+        updateFunction = require('./simplelines.js');
+      }
+      // else if .... other types of chars 
+      if (updateFunction) {
+        updateFunction(model,s,oldpos,newpos, brush);
       }
     }
   }
