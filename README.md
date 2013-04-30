@@ -102,7 +102,7 @@ To make local changes:
     > open index.html
 
 The step `make bundle` is needed because the majority of the code is in modules that are being `require`d from other modules.
-`make bundle` is flattening the `./main.js` into `static/main.js` that is `src`ed by `index.html`.
+`make bundle` is flattening the `./main.js` into `static/bundle.js` that is `src`ed by `./index.html`.
 We follow this style to allow the same code to be used by the browser as well as node-tested by test scripts that 
 can be run automatically from services that support nodejs continuous integration (like travis-ci).
 
