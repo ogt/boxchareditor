@@ -13,7 +13,7 @@ man:
 	$(BUILDMAN) README.md > man/boxchareditor.1
 
 cover: 
-	$(COVER) run test/test1.js
+	$(COVER) run alltests.js
 	$(COVER) report
 	$(COVER) report html
 
