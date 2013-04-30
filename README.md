@@ -113,6 +113,7 @@ If you plan to contribute back your changes you should make sure that
 - you maintain the current code coverage (100%) both in terms of blocks and lines.
 - your code produces no lint errors based on the included `.jshintrc`.
 - you have updated the [README.md](README.md) file to include any chnages that affect the documentation
+
 Your pull requests will not be reviewed unless it satisfies the above requirements
        
 
