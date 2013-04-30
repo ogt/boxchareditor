@@ -1,13 +1,11 @@
 Box drawing character utility
 ======================
 
-[![Build Status](https://travis-ci.org/ogt/boxchareditor.png?branch=gh-pages)](https://travis-ci.org/ogt/boxchareditor)
-
-## SYNOPSIS
+## Synopsis
 
 Simple utility to make it easier to create lines, line charts, org charts using plain text characters.
 
-## EXAMPLES
+## Examples
 
 ![Example](resources/example.gif "Pressing Shift, Command and ALt arrows draws single double lines or erases")
 
@@ -62,7 +60,7 @@ or
              +----+       +----+       +----+                                                                                                                   
                                                     
 
-## DESCRIPTION
+## Description
 
 To try it go to http://ogt.github.com/boxchareditor
 and then use your keyboard arrows to move the yellow cursor around (you may need to click on it to give to the window focus).
@@ -87,7 +85,7 @@ For fonts you shoud probably stick to fixed width fonts.
 The purpose of the utility is to allow you to draw relative complex tables/org charts 
 that you then copy and paste into your editor.
 
-## INSTALLATION 
+## Installation 
 
 To run locally:
 
@@ -140,22 +138,26 @@ Its a good idea to run `make all` or just `make` before pushing to make sure tha
 
 If you want an enhancement feel free to add an issue to github.com/ogt/boxchareditor
 
-## SEE ALSO 
+## See also 
 
 https://github.com/LearnBoost/cli-table, 
 https://github.com/substack/node-multimeter, 
 https://github.com/substack/picture-tube
 
-## ACKNOWLEDGMENTS
+## Acknowledgments
 
 - The animated gif was created using [keycastr](https://github.com/sdeken/keycastr/) , 
 - Quicktime Player and an [online image converter](http://image.online-convert.com/convert-to-gif) following the advice of [github.com/f](https://github.com/f) @ [HN](https://news.ycombinator.com/item?id=5613652).
 
-## COPYRIGHT
+## Copyright
 
 Odysseas Tsatalos, http://tsatalos.gr
 
-## FILES
+## Files
 
 https://github.com/ogt/boxchareditor
+
+## Build status
+
+[![Build Status](https://travis-ci.org/ogt/boxchareditor.png?branch=gh-pages)](https://travis-ci.org/ogt/boxchareditor)
 
