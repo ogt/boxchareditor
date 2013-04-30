@@ -100,14 +100,21 @@ To make local changes:
     > hub clone ogt/boxchareditor && cd boxchareditor
     > npm install
     > # make any changes you want
-    > make bundle  #recreates static/bundle.js
-    > make test # confirm tests run fine
+    > make bundle 
     > open index.html
 
-To recreate the man page (if you don't have ruby's `bundle` then do `gem instal bundle` first)
+The step `make bundle` is needed because the majority of the code is in modules that are being `require`d from other modules.
+`make bundle` is flattening the `./main.js` into `static/main.js` that is `src`ed by `index.html`.
+We follow this style to allow the same code to be used by the browser as well as node-tested by test scripts that 
+can be run automatically from services that support nodejs continuous integration (like travis-ci).
 
-    > bundle install
-    > make man
+If you plan to contribute back your changes you should make sure that 
+- you add unit tests for all functionality described in the issue
+- you maintain the current code coverage (100%) both in terms of blocks and lines.
+- your code produces no lint errors based on the included `.jshintrc`.
+- you have updated the [README.md](README.md) file to include any chnages that affect the documentation
+Your pull requests will not be reviewed unless it satisfies the above requirements
+       
 
 To get coverage report
 
@@ -122,7 +129,14 @@ To run the tap tests
 
     > make test # or just npm test
 
+Finally (optional step) to recreate the man page (if you don't have ruby's `bundle` then do `gem instal bundle` first)
+
+    > bundle install
+    > make man
+    > man man/boxchareditor.1
+
 Its a good idea to run `make all` or just `make` before pushing to make sure that everything has been updated.
+
 If you want an enhancement feel free to add an issue to github.com/ogt/boxchareditor
 
 ## SEE ALSO 
