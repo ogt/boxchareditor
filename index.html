@@ -1,41 +1,45 @@
+<!DOCTYPE html>
 <html>
 <head>
-<title>A box character editor</title>
-<style>
-body {
-    font-family: Sans-Serif;
-    background-color:#b0c4de;
-}
-.header {
-    font-weight: bold;
-}
-.content .title {
-    font-weight: bold;
-    font-size: 20px;
-    margin-bottom: 20px;
-    margin-top: 5px;
-}
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>A box character editor</title>
+    <style>
+        body {
+            font-family: Sans-Serif;
+            background-color: #b0c4de;
+        }
 
-.subtle {
-    font-size: 12px;
-    color: grey;
-}
+        .header {
+            font-weight: bold;
+        }
 
-.modelField {
-  margin-bottom: 2px;
-}
+        .content .title {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 20px;
+            margin-top: 5px;
+        }
 
-.modelLabel {
-  display: inline-block;
-  width: 150px;
-  text-align : right;
-  margin-right: 10px;
-}
+        .subtle {
+            font-size: 12px;
+            color: grey;
+        }
+
+        .modelField {
+            margin-bottom: 2px;
+        }
+
+        .modelLabel {
+            display: inline-block;
+            width: 150px;
+            text-align: right;
+            margin-right: 10px;
+        }
 
 
-</style>
+    </style>
 </head>
-<body onKeyDown="keyPressed(event)" >
+<body onKeyDown="keyPressed(event)">
 <script src="js/jquery.js"></script>
 <script src="js/myutil.js"></script>
 <script src="static/bundle.js"></script>
@@ -46,7 +50,7 @@ body {
 <style>
     .pass:before {
         content: 'PASS: ';
-        color:  blue;
+        color: blue;
         font-weight: bold;
     }
 
@@ -58,139 +62,146 @@ body {
 </style>
 <ul id="assertroot"></ul>
 <script>
-function assert( outcome, description ) {
-    var li = document.createElement('li');
-    li.className = outcome ? 'pass' : 'fail';
-    li.appendChild( document.createTextNode( description ) );
+    function assert(outcome, description) {
+        var li = document.createElement('li');
+        li.className = outcome ? 'pass' : 'fail';
+        li.appendChild(document.createTextNode(description));
 
-    document.getElementById('assertroot').appendChild(li);
-};
+        document.getElementById('assertroot').appendChild(li);
+    }
+    ;
 </script>
 <!-- TEST FRAMEWORK ENDS -->
-
 
 
 <script>
 
 
-var model = {
-  gridRows : 24,
-  gridCols : 80,
-  fontFamily : 'courier' ,
-  fontSize : '12',
-  speed : 1,
-  type : 'simple',
-}
-var lines = []
-var cursor = {}
-
-
-
-function restart() {
-  unsortedKeys(model).forEach(function(field) { if ($('#'+field).val()) model[field] = $('#'+field).val() })
-  var state = eng.reset(model)
-//  assert(false,JSON.stringify(state))
-  lines = state.lines
-  cursor = state.cursor
-  redrawModel()
-}
-
-function keyPressed(e) {
-  var LEFTARROW = 37
-  var UPARROW = 38
-  var RIGHTARROW = 39
-  var DOWNARROW = 40
-  var dir;
-  switch (e.keyCode) {
-    case LEFTARROW :
-      dir = 'L'; break;
-    case RIGHTARROW :
-      dir = 'R'; break;
-    case UPARROW : 
-      dir = 'U'; break;
-    case DOWNARROW :
-      dir = 'D'; break;
-    default:
-  }
-  var brush = brushes.NOBRUSH
-  if (e.shiftKey) brush = brushes.BRUSHSINGLE;
-  if (e.altKey) brush = brushes.BRUSHERASE;
-  if (e.shiftKey && e.metaKey) brush = brushes.BRUSHDOUBLE;
-
-  var speed = $('#speed').val() || model.speed;
-  
-  var state = eng.move(model,{ lines : lines, cursor : cursor }, [dir,brush,speed].join(':'))
-
-  lines = state.lines
-  cursor = state.cursor
-  fastRedrawModel();
-}
-
-function drawGrid() {
-  var d  = $('<div>')
-  for (var i=0;i<model.gridRows;i++) {
-    var s = lines[i].join('');
-    var p;
-    if (i == cursor.row ) {
-      p = $('<p>').html(
-        escapeHTML(s.substr(0,cursor.col)) +
-        '<span id="cursor" style="background-color:yellow;">' +
-        escapeHTML(s[cursor.col])+
-        '</span>'+
-        escapeHTML(s.substr(cursor.col+1))
-      )
+    var model = {
+        gridRows: 24,
+        gridCols: 80,
+        fontFamily: 'courier',
+        fontSize: '12',
+        speed: 1,
+        type: 'block'
     }
-    else
-      p = $('<p>').html(escapeHTML(s));
-    d.append(p.css({'margin-top':0, 'margin-bottom':0 }))
-  }
-  d.css({ 'font-family' : model.fontFamily, 'font-size' : model.fontSize, 'word-wrap': 'break-word', 'margin-top':0, 'margin-bottom':0 })
-  return d;
-}
+    var lines = []
+    var cursor = {}
 
-function drawModelField(field) {
-  var d = $('<div class="modelField"/>')
-  d.append($('<label class="modelLabel subtle"/>').attr('for',field).text(field))
-  d.append($('<input type="text" class="subtle"/>').attr('id',field).attr('value', model[field]))
-  return d
-}
 
-function drawModelEditor() {
-  var d = $('<div/>')
-  unsortedKeys(model).forEach(function(field) { d.append(drawModelField(field)) })
-  return d
-}
+    function restart() {
+        unsortedKeys(model).forEach(function (field) {
+            if ($('#' + field).val()) model[field] = $('#' + field).val()
+        })
+        var state = eng.reset(model)
+//  assert(false,JSON.stringify(state))
+        lines = state.lines
+        cursor = state.cursor
+        redrawModel()
+    }
 
-function drawControlPanel() {
-  var d = $('<div/>');
-  d.append($('<button type="button" onclick="restart()">Restart</button>'))
-  d.append($('<button type="button" onclick="move(left)">Left</button>'))
-  d.append($('<button type="button" onclick="move(right)">Right</button>'))
-  d.append($('<button type="button" onclick="move(up)">Up</button>'))
-  d.append($('<button type="button" onclick="move(down)">Down</button>'))
-  d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw single lines, Shift+Cmd/Meta for double lines. Press Alt to Erase'))
-  d.append(drawModelEditor())
-  d.append($('<a href="https://github.com/ogt/boxchareditor"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>'));
-  return d;
-}
+    function keyPressed(e) {
+        var LEFTARROW = 37
+        var UPARROW = 38
+        var RIGHTARROW = 39
+        var DOWNARROW = 40
+        var dir;
+        switch (e.keyCode) {
+            case LEFTARROW :
+                dir = 'L';
+                break;
+            case RIGHTARROW :
+                dir = 'R';
+                break;
+            case UPARROW :
+                dir = 'U';
+                break;
+            case DOWNARROW :
+                dir = 'D';
+                break;
+            default:
+        }
+        var brush = brushes.NOBRUSH
+        if (e.shiftKey) brush = brushes.BRUSHSINGLE;
+        if (e.altKey) brush = brushes.BRUSHERASE;
+        if (e.shiftKey && e.metaKey) brush = brushes.BRUSHDOUBLE;
 
-function fastRedrawModel() {
-   $('#grid').empty().append(drawGrid())
-}
+        var speed = $('#speed').val() || model.speed;
 
-function redrawModel() {
-  $('.content').empty().append($('<p class="header">').text('A box character editor'))
-  $('.content').append($('<hr/>'))
-  $('.content').append($('<div id="grid" />'))
-  $('.content').append($('<hr/>'))
-  $('.content').append(drawControlPanel())
-  fastRedrawModel();
-}
+        var state = eng.move(model, { lines: lines, cursor: cursor }, [dir, brush, speed].join(':'))
 
-$(function () {
+        lines = state.lines
+        cursor = state.cursor
+        fastRedrawModel();
+    }
+
+    function drawGrid() {
+        var d = $('<div>')
+        for (var i = 0; i < model.gridRows; i++) {
+            var s = lines[i].join('');
+            var p;
+            if (i == cursor.row) {
+                p = $('<p>').html(
+                        escapeHTML(s.substr(0, cursor.col)) +
+                                '<span id="cursor" style="background-color:yellow;">' +
+                                escapeHTML(s[cursor.col]) +
+                                '</span>' +
+                                escapeHTML(s.substr(cursor.col + 1))
+                )
+            }
+            else
+                p = $('<p>').html(escapeHTML(s));
+            d.append(p.css({'margin-top': 0, 'margin-bottom': 0 }))
+        }
+        d.css({ 'font-family': model.fontFamily, 'font-size': model.fontSize, 'word-wrap': 'break-word', 'margin-top': 0, 'margin-bottom': 0 })
+        return d;
+    }
+
+    function drawModelField(field) {
+        var d = $('<div class="modelField"/>')
+        d.append($('<label class="modelLabel subtle"/>').attr('for', field).text(field))
+        d.append($('<input type="text" class="subtle"/>').attr('id', field).attr('value', model[field]))
+        return d
+    }
+
+    function drawModelEditor() {
+        var d = $('<div/>')
+        unsortedKeys(model).forEach(function (field) {
+            d.append(drawModelField(field))
+        })
+        return d
+    }
+
+    function drawControlPanel() {
+        var d = $('<div/>');
+        d.append($('<button type="button" onclick="restart()">Restart</button>'))
+        d.append($('<button type="button" onclick="move(left)">Left</button>'))
+        d.append($('<button type="button" onclick="move(right)">Right</button>'))
+        d.append($('<button type="button" onclick="move(up)">Up</button>'))
+        d.append($('<button type="button" onclick="move(down)">Down</button>'))
+        d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw single lines, Shift+Cmd/Meta for double lines. Press Alt to Erase'))
+        d.append(drawModelEditor())
+        d.append($('<a href="https://github.com/ogt/boxchareditor"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>'));
+        return d;
+    }
+
+    function fastRedrawModel() {
+        $('#grid').empty().append(drawGrid())
+    }
+
+    function redrawModel() {
+        $('.content').empty().append($('<p class="header">').text('A box character editor'))
+        $('.content').append($('<hr/>'))
+        $('.content').append($('<div id="grid" />'))
+        $('.content').append($('<hr/>'))
+        $('.content').append(drawControlPanel())
+        fastRedrawModel();
+    }
+
+    $(function () {
 //  _stringPasteTester()
-  restart()
-})
+        restart()
+    })
 
 </script>
 <div class="content fill"></div>
