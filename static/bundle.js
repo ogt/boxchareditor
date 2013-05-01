@@ -220,7 +220,7 @@ function updateGrid(model,s,oldpos, newpos, brush) {
 
 /* │ ─ ┼ */
 
-/* ┤ ┐ └ ┴ ┬ ├ ┐ ┘ ┌ */
+/* ┤ ┐ └ ┴ ┬ ├ ┘ ┌ */
 
 module = module.exports =  updateGrid;
 
@@ -234,6 +234,13 @@ var directionEnum = {
 var axisEnum = {
   X: 1,
   Y: 0
+};
+
+var connectorsEnum = {
+  TOP: 0,
+  BOTTOM: 1,
+  LEFT: 2,
+  RIGHT: 3
 };
 
 function updateGrid(model, s, oldpos, newpos, brush) {
@@ -373,78 +380,24 @@ function updateGrid(model, s, oldpos, newpos, brush) {
 
         return this[1][1];
       }
-      /*topRight: function(replace) {
-        if (replace != undefined)
-          this[0][2] = replace;
-
-        return this[0][2];
-      },
-      bottomRight: function(replace) {
-        if (replace != undefined)
-          this[2][2] = replace;
-
-        return this[2][2];
-      },
-      bottomLeft: function(replace) {
-        if (replace != undefined)
-          this[2][0] = replace;
-
-        return this[2][0];
-      },
-      topLeft: function(replace) {
-        if (replace != undefined)
-          this[0][0] = replace;
-
-        return this[0][0];
-      }*/
     };
 
-    /*var actions = {
-      x: {
-        positive: {
-          do: function() {
-
-          },
-          erase: {
-            do: function() {
-
-            }
-          }
-        },
-        negative: {
-          do: function() {
-
-          },
-          erase: {
-            do: function() {
-
-            }
-          }
+    var MatrixConnectorsMixin = {
+      all: function() {
+        var result = [];
+        if ('┼│┤├┌┬┐'.indexOf(this.top()) != -1) {
+          result.push(connectorsEnum.TOP);
         }
-      },
-      x: {
-        positive: {
-          do: function() {
 
-          },
-          erase: {
-            do: function() {
-
-            }
-          }
-        },
-        negative: {
-          do: function() {
-
-          },
-          erase: {
-            do: function() {
-
-            }
-          }
+        if ('┼│┤├└┴┘'.indexOf(this.bottom()) != -1) {
+          result.push(connectorsEnum.BOTTOM);
         }
+
+        //if ('┼─')
+
+        return result;
       }
-    };*/
+    };
 
     function onMoveX(matrix, changes) {
       matrix.center('─');
