@@ -279,43 +279,46 @@ function updateGrid(model, s, oldpos, newpos, brush) {
   function executeTransform(screen, oldpos, changes) {
     function applyMixin(obj, target) {
       var result = {};
+
+      var fn = function(key) {
+        return function() {
+          return obj[key].apply(target, arguments);
+        };
+      };
+
       for (var key in obj) {
-        result[key] = (function(key) {
-          return function() {
-            return obj[key].apply(target, arguments);
-          };
-        })(key);
+        result[key] = fn(key);
       }
       return result;
     }
 
     var MatrixMixin = {
       top: function(replace) {
-        if (replace != undefined)
+        if (replace !== undefined)
           this[0][1] = replace;
 
         return this[0][1];
       },
       bottom: function(replace) {
-        if (replace != undefined)
+        if (replace !== undefined)
           this[2][1] = replace;
 
         return this[2][1];
       },
       left: function(replace) {
-        if (replace != undefined)
+        if (replace !== undefined)
           this[1][0] = replace;
 
         return this[1][0];
       },
       right: function(replace) {
-        if (replace != undefined)
+        if (replace !== undefined)
           this[1][2] = replace;
 
         return this[1][2];
       },
       center: function(replace) {
-        if (replace != undefined)
+        if (replace !== undefined)
           this[1][1] = replace;
 
         return this[1][1];
