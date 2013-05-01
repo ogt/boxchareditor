@@ -22,9 +22,50 @@ function do_test(input,output,moves) {
   return [grid.to_string(state.lines) , output.join('\n')];
 }
 
-test('drowing window', function(t) {
+test('drawing for top-bottom middle connection', function (t) {
   t.plan(1);
 
+  var input = [
+    '    ',
+    '    ',
+    '    '
+  ];
+  var output = [
+    '    ',
+    ' ┴┬ ',
+    '    '
+  ];
+
+  var moves = 'R: :1,D: :1,R:-:2,L:-:1,D:-:1,U: :1,D:-:1,U: :1,L: :1,U:-:1,D: :1,U:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+
+});
+
+test('drawing for left detection', function(t) {
+  t.plan(1);
+
+  var input = [
+    '  ',
+    '  ',
+    '  '
+  ];
+  var output = [
+    ' │',
+    '┌┤',
+    '└┘'
+  ];
+  var moves = 'R: :1,D:-:1,L:-:1,D:-:1,R:-:1,U:-:1,L:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing window', function(t) {
+  t.plan(1);
 
   var input = [
     '     ',

@@ -226,7 +226,7 @@ module = module.exports =  updateGrid;
 
 var brushes = require('./brushes.js');
 var mixins = require('./mixins.js');
-var matrix = require('./matrix.js');
+var matrix3x3 = require('./matrix3x3.js');
 
 var directionEnum = {
   POSITIVE: 1,
@@ -266,7 +266,7 @@ function updateGrid(model, s, oldpos, newpos, brush) {
       postLinking();
     }
 
-    var matrix = matrix.extract3x3(screen, oldpos);
+    var matrix = matrix3x3.extract3x3(model, screen, oldpos);
     var matrixExt = mixins.apply(mixins.Matrix, matrix);
     var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
     var line = changes.axis === axisEnum.X ? '─' : '│';
@@ -296,7 +296,7 @@ function updateGrid(model, s, oldpos, newpos, brush) {
 
     updateLinks(matrixExt, matrixConnectorsExt, line, link.to, link.from);
 
-    matrix.apply3x3(matrix, screen, oldpos);
+    matrix3x3.apply3x3(model, matrix, screen, oldpos);
   }
 
   function eraseLine(screen, oldpos) {
@@ -315,17 +315,17 @@ function updateGrid(model, s, oldpos, newpos, brush) {
       removeTail('right', 'left');
     }
 
-    var matrix = matrix.extract3x3(screen, oldpos);
+    var matrix = matrix3x3.extract3x3(model, screen, oldpos);
     var matrixExt = mixins.apply(mixins.Matrix, matrix);
     var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
 
     eraseLink(matrixExt, matrixConnectorsExt);
 
-    matrix.apply3x3(matrix, screen, oldpos);
+    matrix3x3.apply3x3(model, matrix, screen, oldpos);
   }
 
   function clearLook(screen) {
-    var matrix = matrix.extract3x3(screen, screen.cursor);
+    var matrix = matrix3x3.extract3x3(model, screen, screen.cursor);
     var matrixExt = mixins.apply(mixins.Matrix, matrix);
     var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
 
@@ -347,7 +347,7 @@ function updateGrid(model, s, oldpos, newpos, brush) {
 
     matrixExt.center(matrixConnectorsExt.link(connectors));
 
-    matrix.apply3x3(matrix, screen, screen.cursor);
+    matrix3x3.apply3x3(model, matrix, screen, screen.cursor);
   }
 
   var changes = {
@@ -381,7 +381,7 @@ function updateGrid(model, s, oldpos, newpos, brush) {
   clearLook(s);
 }
 
-},{"./brushes.js":3,"./mixins.js":6,"./matrix.js":7}],6:[function(require,module,exports){
+},{"./brushes.js":3,"./mixins.js":6,"./matrix3x3.js":7}],6:[function(require,module,exports){
 module = module.exports = (function () {
   var _ = {};
 
@@ -567,7 +567,7 @@ module = module.exports = (function () {
 module = module.exports = (function () {
   var _ = {};
 
-  _.extract3x3 = function (screen, oldpos) {
+  _.extract3x3 = function (model, screen, oldpos) {
     function getValue(offset) {
       var
         x = oldpos.col + offset.x,
@@ -586,7 +586,7 @@ module = module.exports = (function () {
     ];
   };
 
-  _.apply3x3 = function (matrix, screen, oldpos) {
+  _.apply3x3 = function (model, matrix, screen, oldpos) {
     function setValue(offset, value) {
       var
         x = oldpos.col + offset.x,
