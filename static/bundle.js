@@ -226,7 +226,17 @@ module = module.exports =  updateGrid;
 
 var brushes = require('./brushes.js');
 
-function updateGrid(model,s,oldpos, newpos, brush) {
+var directionEnum = {
+  POSITIVE: 1,
+  NEGATIVE: 0
+};
+
+var axisEnum = {
+  X: 1,
+  Y: 0
+};
+
+function updateGrid(model, s, oldpos, newpos, brush) {
 
   /*function eraseNeighbors() {
     function updatePos(model,s,x,y) {
@@ -319,7 +329,7 @@ function updateGrid(model,s,oldpos, newpos, brush) {
     }
   }
 
-  function executeTransform(screen, oldpos, lineToWrite) {
+  function executeTransform(screen, oldpos, changes) {
     function applyMixin(obj, target) {
       var result = {};
       for (var key in obj) {
@@ -362,8 +372,8 @@ function updateGrid(model,s,oldpos, newpos, brush) {
           this[1][1] = replace;
 
         return this[1][1];
-      },
-      topRight: function(replace) {
+      }
+      /*topRight: function(replace) {
         if (replace != undefined)
           this[0][2] = replace;
 
@@ -386,53 +396,139 @@ function updateGrid(model,s,oldpos, newpos, brush) {
           this[0][0] = replace;
 
         return this[0][0];
-      }
+      }*/
     };
 
-    function onMoveX(matrix) {
+    /*var actions = {
+      x: {
+        positive: {
+          do: function() {
+
+          },
+          erase: {
+            do: function() {
+
+            }
+          }
+        },
+        negative: {
+          do: function() {
+
+          },
+          erase: {
+            do: function() {
+
+            }
+          }
+        }
+      },
+      x: {
+        positive: {
+          do: function() {
+
+          },
+          erase: {
+            do: function() {
+
+            }
+          }
+        },
+        negative: {
+          do: function() {
+
+          },
+          erase: {
+            do: function() {
+
+            }
+          }
+        }
+      }
+    };*/
+
+    function onMoveX(matrix, changes) {
       matrix.center('─');
 
       if (matrix.top() !== '│' && matrix.bottom() === '│')
-        matrix.center('┐');
+        if (changes.direction === directionEnum.POSITIVE)
+          matrix.center('┌');
+        else matrix.center('┐');
+
       if (matrix.top() === '│' && matrix.bottom() !== '│')
-        matrix.center('┘');
+        if (changes.direction === directionEnum.POSITIVE)
+          matrix.center('└');
+        else matrix.center('┘');
+
       if (matrix.top() === '│' && matrix.bottom() === '│')
+        if (changes.direction === directionEnum.POSITIVE)
+          matrix.center('┤');
+        else matrix.center('├');
+
+      if (matrix.left() === '─' && matrix.right() === '─')
+        if (matrix.top() === '│' && matrix.bottom() !== '│')
+          matrix.center('┴');
+        else if (matrix.top() !== '│' && matrix.bottom() === '│')
+          matrix.center('┬');
+
+      if (matrix.center() === '│' && matrix.left() === '─')
         matrix.center('┤');
 
-      if (matrix.left() === '┤')
-        matrix.left('┼');
+      if (matrix.center() === '│' && matrix.right() === '─')
+        matrix.center('├');
 
-      if (matrix.right() === '├')
-        matrix.right('┼');
+      if (matrix.left() === '─' && matrix.right() === '─' &&
+        matrix.top() === '│' && matrix.bottom() === '│') {
+        matrix.center('┼');
+      }
     }
 
-    function onMoveY(matrix) {
+    function onMoveY(matrix, changes) {
       matrix.center('│')
     }
 
-    function onErase(matrix) {
+    function onErase(matrix, changes) {
       matrix.center(' ')
     }
 
     var matrix = extract3x3(screen, oldpos);
     var matrixExt = applyMixin(MatrixMixin, matrix);
 
-    if (lineToWrite === ' ') onErase(matrixExt);
-    if (lineToWrite === '─') onMoveX(matrixExt);
-    if (lineToWrite === '│') onMoveY(matrixExt);
+    if (changes.isErase === true)
+      onErase(matrixExt, changes);
+    else {
+      if (changes.axis === axisEnum.X) {
+        onMoveX(matrixExt, changes)
+      }
+      else onMoveY(matrixExt, changes);
+    }
 
     apply3x3(matrix, screen, oldpos);
   }
 
-  var line;
-  if (brush == brushes.BRUSHERASE)
-    line = ' ';
-  else if (oldpos.col != newpos.col && brush == brushes.BRUSHSINGLE)
-    line = '─';
-  else if (oldpos.row != newpos.row)
-    line = '│';
+  var changes = {
+    isErase: false,
+    direction: null,
+    axis: null
+  };
 
-  executeTransform(s, oldpos, line);
+  if (brush == brushes.BRUSHERASE)
+    changes.isErase = true;
+  if (oldpos.col != newpos.col) {
+    changes.axis = axisEnum.X;
+
+    if (newpos.col - oldpos.col > 0)
+      changes.direction = directionEnum.POSITIVE;
+    else changes.direction = directionEnum.NEGATIVE;
+  }
+  else {
+    changes.axis = axisEnum.Y;
+
+    if (newpos.row - oldpos.row > 0)
+      changes.direction = directionEnum.POSITIVE;
+    else changes.direction = directionEnum.NEGATIVE;
+  }
+
+  executeTransform(s, oldpos, changes);
 }
 
 },{"./brushes.js":3}]},{},[1])
