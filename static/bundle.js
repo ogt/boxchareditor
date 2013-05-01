@@ -141,75 +141,7 @@ return _;
 })();
 // end of engine
 
-},{"./brushes.js":3,"./simplelines.js":4,"./blocklines.js":5}],4:[function(require,module,exports){
-module = module.exports =  updateGrid;
-
-var brushes = require('./brushes.js');
-
-function updateGrid(model,s,oldpos, newpos, brush) {
-  function updatePos(model,s,x,y) {
-    if (x < 0 || y < 0) return;
-    if (y >= model.gridRows || x >=model.gridCols) return;
-    if (s.lines[y][x] == '+') {
-      if (   (x === 0                || ' |'.indexOf(s.lines[y][x-1]) != -1)  && 
-             (x == model.gridCols-1 || ' |'.indexOf(s.lines[y][x+1]) != -1)
-         )  
-        s.lines[y][x] = '|';
-      // check if should become '-' or '='
-      if (   (y === 0                || ' -='.indexOf(s.lines[y-1][x]) != -1)  && 
-             (y == model.gridRows-1 || ' -='.indexOf(s.lines[y+1][x]) != -1)
-         )  {
-        // need to revert to - or = . Will need to look left or right to decide
-        if ((x>0 && '='.indexOf(s.lines[y][x-1]) != -1 ) ||
-            (       '='.indexOf(s.lines[y][x+1]) != -1)
-            ) {
-          s.lines[y][x] = '=';
-        }
-        else
-          s.lines[y][x] = '-';
-      }
-    }
-  }
-
-  function updateCursor(model,s,x,y,line) {
-    var newDir = line, oldDir = s.lines[y][x];
-    if (newDir == '=') newDir = '-';
-    if (oldDir == '=') oldDir = '-';
-
-    if (s.lines[y][x] == '+')
-      return; // | or - or = on +
-    else if (s.lines[y][x] == ' ')
-      s.lines[y][x] = line; // - or = or | on ' '
-    else if (newDir != oldDir)
-      s.lines[y][x] = '+'; // | on -/= or -/= on |
-    else
-      return; // | on | or - on -
-  }
-  var line;
-  if (brush == brushes.BRUSHERASE)
-    line = ' ';
-  else if (oldpos.col != newpos.col && brush == brushes.BRUSHSINGLE)
-    line = '-';
-  else if (oldpos.col != newpos.col && brush == brushes.BRUSHDOUBLE)
-    line = '=';
-  else if (oldpos.row != newpos.row)
-    line = '|';
-  updateCursor(model,s,oldpos.col,oldpos.row, line);
-  updateCursor(model,s,newpos.col,newpos.row, line);
-  if (line == ' ' || s.lines[oldpos.row][oldpos.col] != '+')
-    s.lines[oldpos.row][oldpos.col] = line;
-  if (line == ' ' || s.lines[newpos.row][newpos.col] != '+')
-    s.lines[newpos.row][newpos.col] = line;
-  if (brush == brushes.BRUSHERASE) {// neighbor fixups only on erase
-    for (var x = Math.min(oldpos.col,newpos.col)-1;x<=Math.max(oldpos.col,newpos.col)+1;x++ ){
-      for (var y = Math.min(oldpos.row,newpos.row)-1;y<=Math.max(oldpos.row,newpos.row)+1;y++ ){
-        updatePos(model,s,x,y);
-      }
-    }
-  }
-}
-
-},{"./brushes.js":3}],5:[function(require,module,exports){
+},{"./brushes.js":3,"./simplelines.js":4,"./blocklines.js":5}],5:[function(require,module,exports){
 /**
  * Created with JetBrains WebStorm.
  * User: http://github.com/GulinSS
@@ -236,67 +168,7 @@ var axisEnum = {
   Y: 0
 };
 
-var connectorsEnum = {
-  TOP: 0,
-  BOTTOM: 1,
-  LEFT: 2,
-  RIGHT: 3
-};
-
 function updateGrid(model, s, oldpos, newpos, brush) {
-
-  /*function eraseNeighbors() {
-    function updatePos(model,s,x,y) {
-      if (x < 0 || y < 0) return;
-      if (y >= model.gridRows || x >=model.gridCols) return;
-
-      if (s.lines[y][x] == '┼') {
-        if ((x === 0 || ' │'.indexOf(s.lines[y][x-1]) != -1)  &&
-          (x == model.gridCols-1 || ' │'.indexOf(s.lines[y][x+1]) != -1))
-          s.lines[y][x] = '│';
-
-        if ((y === 0 || ' ─'.indexOf(s.lines[y-1][x]) != -1)  &&
-          (y == model.gridRows-1 || ' ─'.indexOf(s.lines[y+1][x]) != -1))  {
-
-          s.lines[y][x] = '─';
-        }
-      }
-    }
-
-    for (var x = Math.min(oldpos.col, newpos.col) - 1; x <= Math.max(oldpos.col, newpos.col) + 1; x++) {
-      for (var y = Math.min(oldpos.row, newpos.row) - 1; y <= Math.max(oldpos.row, newpos.row) + 1; y++) {
-        updatePos(model, s, x, y);
-      }
-    }
-  }*/
-
-  /*function updateCursor(model,s,x,y,line) {
-    var newDir = line, oldDir = s.lines[y][x];
-
-    if ('┤┐└┴┬├┼'.indexOf(s.lines[y][x-1]) != -1) {
-
-    }
-    else if (s.lines[y][x] == ' ')
-      s.lines[y][x] = line; // - or = or | on ' '
-    else if (newDir != oldDir) {
-      console.log(arguments);
-
-      if ((x === 0 || ' │'.indexOf(s.lines[y][x-1]) != -1)  &&
-        (x == model.gridCols-1 || ' │'.indexOf(s.lines[y][x+1]) != -1)) {
-
-        s.lines[y][x] = '┐';
-      }
-
-      else if ((y === 0 || ' ─'.indexOf(s.lines[y-1][x]) != -1)  &&
-        (y == model.gridRows-1 || ' ─'.indexOf(s.lines[y+1][x]) != -1))  {
-
-        s.lines[y][x] = '└';
-      }
-
-      else s.lines[y][x] = '┼'; // | on -/= or -/= on |
-
-    }
-  }*/
 
   function extract3x3(screen, oldpos) {
     function getValue(offset) {
@@ -384,59 +256,187 @@ function updateGrid(model, s, oldpos, newpos, brush) {
 
     var MatrixConnectorsMixin = {
       all: function() {
-        var result = [];
+        var result = {};
+
         if ('┼│┤├┌┬┐'.indexOf(this.top()) != -1) {
-          result.push(connectorsEnum.TOP);
+          result.top = true;
         }
 
         if ('┼│┤├└┴┘'.indexOf(this.bottom()) != -1) {
-          result.push(connectorsEnum.BOTTOM);
+          result.bottom = true;
         }
 
-        //if ('┼─')
+        if ('┼─┴┬┤┐┘'.indexOf(this.right()) != -1) {
+          result.right = true;
+        }
+
+        if ('┼─┴┬├┌└'.indexOf(this.left()) != -1) {
+          result.left = true;
+        }
 
         return result;
+      },
+      link: function(connectors) {
+        if (Object.keys(connectors).length < 2) return;
+
+        if (Object.keys(connectors).length === 4) return '┼';
+
+        if (Object.keys(connectors).length === 2) {
+          if (connectors.top) {
+            if (connectors.right) return '└';
+            if (connectors.bottom) return '│';
+            if (connectors.left) return '┘';
+          }
+
+          if (connectors.right) {
+            if (connectors.bottom) return '┌';
+            if (connectors.left) return '─';
+          }
+
+          if (connectors.bottom) {
+            if (connectors.left) return '┐';
+          }
+        }
+
+        if (Object.keys(connectors).length === 3) {
+          if (connectors.top) {
+            if (connectors.right) {
+              if (connectors.bottom) return "├";
+              if (connectors.left) return "┴";
+            }
+
+            if (connectors.bottom) {
+              if (connectors.left) return "┤";
+            }
+          }
+
+          if (connectors.right) {
+            if (connectors.bottom) {
+              if (connectors.left) return "┬";
+            }
+          }
+        }
+      },
+      linkInfo: function(line) {
+        if (line === '│') return {
+          top: true,
+          bottom: true
+        };
+
+        if (line === '─') return {
+          left: true,
+          right: true
+        };
+
+        if (line === '┼') return {
+          top: true,
+          left: true,
+          right: true,
+          bottom: true
+        };
+
+        if (line === '┤') return {
+          top: true,
+          right: true,
+          bottom: true
+        };
+
+        if (line === '┐') return {
+          bottom: true,
+          left: true
+        };
+
+        if (line === '└') return {
+          top: true,
+          right: true
+        };
+
+        if (line === '┴') return {
+          top: true,
+          right: true,
+          left: true
+        };
+
+        if (line === '┬') return {
+          left: true,
+          right: true,
+          bottom: true
+        };
+
+        if (line === '├') return {
+          right: true,
+          top: true,
+          bottom: true
+        };
+
+        if (line === '┘') return {
+          top: true,
+          left: true
+        };
+
+        if (line === '┌') return {
+          right: true,
+          bottom: true
+        }
       }
     };
 
-    function onMoveX(matrix, changes) {
-      matrix.center('─');
+    function onMoveX(matrix, matrixConnectors, changes) {
+      var connectorsCurrent = matrixConnectors.all();
+      if (Object.keys(connectorsCurrent).length === 0) {
+        matrix.center('─');
+        return;
+      }
 
-      if (matrix.top() !== '│' && matrix.bottom() === '│')
-        if (changes.direction === directionEnum.POSITIVE)
-          matrix.center('┌');
-        else matrix.center('┐');
+      if (changes.direction === directionEnum.POSITIVE) {
+        connectorsCurrent.right = true;
+      } else connectorsCurrent.left = true;
 
-      if (matrix.top() === '│' && matrix.bottom() !== '│')
-        if (changes.direction === directionEnum.POSITIVE)
-          matrix.center('└');
-        else matrix.center('┘');
+      matrix.center(matrixConnectors.link(connectorsCurrent));
 
-      if (matrix.top() === '│' && matrix.bottom() === '│')
-        if (changes.direction === directionEnum.POSITIVE)
-          matrix.center('┤');
-        else matrix.center('├');
+      var connectorsPrevious = null;
+      if (changes.direction === directionEnum.POSITIVE) {
+        if (matrix.left() === ' ') return;
 
-      if (matrix.left() === '─' && matrix.right() === '─')
-        if (matrix.top() === '│' && matrix.bottom() !== '│')
-          matrix.center('┴');
-        else if (matrix.top() !== '│' && matrix.bottom() === '│')
-          matrix.center('┬');
+        connectorsPrevious = matrixConnectors.linkInfo(matrix.left());
+        connectorsPrevious.right = true;
+        matrix.left(matrixConnectors.link(connectorsPrevious));
+      } else {
+        if (matrix.right() === ' ') return;
 
-      if (matrix.center() === '│' && matrix.left() === '─')
-        matrix.center('┤');
-
-      if (matrix.center() === '│' && matrix.right() === '─')
-        matrix.center('├');
-
-      if (matrix.left() === '─' && matrix.right() === '─' &&
-        matrix.top() === '│' && matrix.bottom() === '│') {
-        matrix.center('┼');
+        connectorsPrevious = matrixConnectors.linkInfo(matrix.right());
+        connectorsPrevious.left = true;
+        matrix.right(matrixConnectors.link(connectorsPrevious));
       }
     }
 
-    function onMoveY(matrix, changes) {
-      matrix.center('│')
+    function onMoveY(matrix, matrixConnectors, changes) {
+      var connectorsCurrent = matrixConnectors.all();
+      if (Object.keys(connectorsCurrent).length === 0) {
+        matrix.center('│');
+        return;
+      }
+
+      if (changes.direction === directionEnum.POSITIVE) {
+        connectorsCurrent.bottom = true;
+      } else connectorsCurrent.top = true;
+
+      matrix.center(matrixConnectors.link(connectorsCurrent));
+
+      var connectorsPrevious = null;
+      if (changes.direction === directionEnum.POSITIVE) {
+        if (matrix.top() === ' ') return;
+
+        connectorsPrevious = matrixConnectors.linkInfo(matrix.top());
+        connectorsPrevious.bottom = true;
+        matrix.top(matrixConnectors.link(connectorsPrevious));
+      } else {
+        if (matrix.bottom() === ' ') return;
+
+        connectorsPrevious = matrixConnectors.linkInfo(matrix.bottom());
+        connectorsPrevious.top = true;
+        matrix.bottom(matrixConnectors.link(connectorsPrevious));
+      }
     }
 
     function onErase(matrix, changes) {
@@ -445,14 +445,15 @@ function updateGrid(model, s, oldpos, newpos, brush) {
 
     var matrix = extract3x3(screen, oldpos);
     var matrixExt = applyMixin(MatrixMixin, matrix);
+    var matrixConnectorsExt = applyMixin(MatrixConnectorsMixin, matrixExt);
 
     if (changes.isErase === true)
       onErase(matrixExt, changes);
     else {
       if (changes.axis === axisEnum.X) {
-        onMoveX(matrixExt, changes)
+        onMoveX(matrixExt, matrixConnectorsExt, changes)
       }
-      else onMoveY(matrixExt, changes);
+      else onMoveY(matrixExt, matrixConnectorsExt, changes);
     }
 
     apply3x3(matrix, screen, oldpos);
@@ -482,6 +483,74 @@ function updateGrid(model, s, oldpos, newpos, brush) {
   }
 
   executeTransform(s, oldpos, changes);
+}
+
+},{"./brushes.js":3}],4:[function(require,module,exports){
+module = module.exports =  updateGrid;
+
+var brushes = require('./brushes.js');
+
+function updateGrid(model,s,oldpos, newpos, brush) {
+  function updatePos(model,s,x,y) {
+    if (x < 0 || y < 0) return;
+    if (y >= model.gridRows || x >=model.gridCols) return;
+    if (s.lines[y][x] == '+') {
+      if (   (x === 0                || ' |'.indexOf(s.lines[y][x-1]) != -1)  && 
+             (x == model.gridCols-1 || ' |'.indexOf(s.lines[y][x+1]) != -1)
+         )  
+        s.lines[y][x] = '|';
+      // check if should become '-' or '='
+      if (   (y === 0                || ' -='.indexOf(s.lines[y-1][x]) != -1)  && 
+             (y == model.gridRows-1 || ' -='.indexOf(s.lines[y+1][x]) != -1)
+         )  {
+        // need to revert to - or = . Will need to look left or right to decide
+        if ((x>0 && '='.indexOf(s.lines[y][x-1]) != -1 ) ||
+            (       '='.indexOf(s.lines[y][x+1]) != -1)
+            ) {
+          s.lines[y][x] = '=';
+        }
+        else
+          s.lines[y][x] = '-';
+      }
+    }
+  }
+
+  function updateCursor(model,s,x,y,line) {
+    var newDir = line, oldDir = s.lines[y][x];
+    if (newDir == '=') newDir = '-';
+    if (oldDir == '=') oldDir = '-';
+
+    if (s.lines[y][x] == '+')
+      return; // | or - or = on +
+    else if (s.lines[y][x] == ' ')
+      s.lines[y][x] = line; // - or = or | on ' '
+    else if (newDir != oldDir)
+      s.lines[y][x] = '+'; // | on -/= or -/= on |
+    else
+      return; // | on | or - on -
+  }
+  var line;
+  if (brush == brushes.BRUSHERASE)
+    line = ' ';
+  else if (oldpos.col != newpos.col && brush == brushes.BRUSHSINGLE)
+    line = '-';
+  else if (oldpos.col != newpos.col && brush == brushes.BRUSHDOUBLE)
+    line = '=';
+  else if (oldpos.row != newpos.row)
+    line = '|';
+  updateCursor(model,s,oldpos.col,oldpos.row, line);
+  updateCursor(model,s,newpos.col,newpos.row, line);
+  if (line == ' ' || s.lines[oldpos.row][oldpos.col] != '+')
+    s.lines[oldpos.row][oldpos.col] = line;
+  if (line == ' ' || s.lines[newpos.row][newpos.col] != '+')
+    s.lines[newpos.row][newpos.col] = line;
+  if (brush == brushes.BRUSHERASE) {// neighbor fixups only on erase
+    for (var x = Math.min(oldpos.col,newpos.col)-1;x<=Math.max(oldpos.col,newpos.col)+1;x++ ){
+      for (var y = Math.min(oldpos.row,newpos.row)-1;y<=Math.max(oldpos.row,newpos.row)+1;y++ ){
+        updatePos(model,s,x,y);
+      }
+    }
+  }
 }
 
 },{"./brushes.js":3}]},{},[1])
