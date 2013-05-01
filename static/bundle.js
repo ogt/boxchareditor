@@ -446,9 +446,24 @@ function updateGrid(model, s, oldpos, newpos, brush) {
         if (line === '┌') return {
           right: true,
           bottom: true
-        }
+        };
       }
     };
+
+    function eraseLinks(matrix, matrixConnectors) {
+      function removeTail(side, aside) {
+        var connectors = matrixConnectors.linkInfo(matrix[aside]());
+        delete connectors[side];
+        matrix[aside](matrixConnectors.link(connectors));
+      }
+
+      matrixExt.center(' ');
+
+      removeTail('bottom', 'top');
+      removeTail('top', 'bottom');
+      removeTail('left', 'right');
+      removeTail('right', 'left');
+    }
 
     function updateLinks(matrix, matrixConnectors, line, side, aside) {
       var linkCurrent = matrixConnectors.linkInfo(matrix.center());
@@ -460,6 +475,12 @@ function updateGrid(model, s, oldpos, newpos, brush) {
 
       connectorsCurrent[side] = true;
       matrix.center(matrixConnectors.link(connectorsCurrent));
+
+      if (matrix[side]() === ' ') return;
+
+      var connectorsNext = matrixConnectors.linkInfo(matrix[side]());
+      connectorsNext[aside] = matrixConnectors.linkInfo(matrix.center())[side];
+      matrix[side](matrixConnectors.link(connectorsNext));
 
       if (matrix[aside]() === ' ') return;
 
@@ -498,7 +519,7 @@ function updateGrid(model, s, oldpos, newpos, brush) {
       }
 
     if (changes.isErase) {
-      matrixExt.center(' ');
+      eraseLinks(matrixExt, matrixConnectorsExt);
     } else updateLinks(matrixExt, matrixConnectorsExt, line, link.to, link.from);
 
     apply3x3(matrix, screen, oldpos);
