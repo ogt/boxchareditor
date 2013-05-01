@@ -22,23 +22,42 @@ function do_test(input,output,moves) {
   return [grid.to_string(state.lines) , output.join('\n')];
 }
 
-/*test('drawing cross', function(t) {
+test('drowing window', function(t) {
   t.plan(1);
 
+
   var input = [
-    ' ┌┐',
+    '     ',
+    '     ',
+    '     '
   ];
   var output = [
-    '┌ ',
-    '└┘'
+    ' ┌┬┐ ',
+    ' ├┼┤ ',
+    ' └┴┘ '
   ];
-  var moves = 'R: :1,D:#:1';
+  var moves = 'R: :1,R:-:2,D:-:2,L:-:2,U:-:2,R: :1,D:-:2,L: :1,U: :1,R:-:2';
 
   var l = do_test(input,output,moves);
   t.equal(l[0],l[1]);
   t.end();
 });
-*/
+
+test('drawing cross', function(t) {
+  t.plan(1);
+
+  var input = [
+    ' │ '
+  ];
+  var output = [
+    ' ┼ '
+  ];
+  var moves = 'R: :1,R:-:1,L:-:1,L:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
 
 test('drawing a 2x2 square', function (t) {
   t.plan(1);

@@ -225,6 +225,8 @@ function updateGrid(model,s,oldpos, newpos, brush) {
 module = module.exports =  updateGrid;
 
 var brushes = require('./brushes.js');
+var mixins = require('./mixins.js');
+var matrix = require('./matrix.js');
 
 var directionEnum = {
   POSITIVE: 1,
@@ -238,7 +240,167 @@ var axisEnum = {
 
 function updateGrid(model, s, oldpos, newpos, brush) {
 
-  var MatrixMixin = {
+  function drawLine(screen, oldpos, changes) {
+
+    function updateLinks(matrix, matrixConnectors, line, side, aside) {
+      function postLinking() {
+        //TODO: kill doubles
+
+        if (matrix[side]() === ' ') return;
+
+        var connectorsNext = matrixConnectors.linkInfo(matrix[side]());
+        connectorsNext[aside] = matrixConnectors.linkInfo(matrix.center())[side];
+        matrix[side](matrixConnectors.link(connectorsNext));
+      }
+
+      var linkCurrent = matrixConnectors.linkInfo(matrix.center());
+      var connectorsCurrent = matrixConnectors.all(linkCurrent);
+
+      if (Object.keys(connectorsCurrent).length === 0) {
+        matrix.center(line);
+      } else {
+        connectorsCurrent[side] = true;
+        matrix.center(matrixConnectors.link(connectorsCurrent));
+      }
+
+      postLinking();
+    }
+
+    var matrix = matrix.extract3x3(screen, oldpos);
+    var matrixExt = mixins.apply(mixins.Matrix, matrix);
+    var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
+    var line = changes.axis === axisEnum.X ? '─' : '│';
+    var link = {
+      from: null,
+      to: null
+    };
+
+    if (changes.axis === axisEnum.X)
+      if (changes.direction === directionEnum.POSITIVE) {
+        link.to = 'right';
+        link.from = 'left';
+      }
+      else {
+        link.to = 'left';
+        link.from = 'right';
+      }
+    else
+    if (changes.direction === directionEnum.POSITIVE) {
+      link.to = 'bottom';
+      link.from = 'top';
+    }
+    else {
+      link.to = 'top';
+      link.from = 'bottom';
+    }
+
+    updateLinks(matrixExt, matrixConnectorsExt, line, link.to, link.from);
+
+    matrix.apply3x3(matrix, screen, oldpos);
+  }
+
+  function eraseLine(screen, oldpos) {
+    function eraseLink(matrix, matrixConnectors) {
+      function removeTail(side, aside) {
+        var connectors = matrixConnectors.linkInfo(matrix[aside]());
+        delete connectors[side];
+        matrix[aside](matrixConnectors.link(connectors));
+      }
+
+      matrixExt.center(' ');
+
+      removeTail('bottom', 'top');
+      removeTail('top', 'bottom');
+      removeTail('left', 'right');
+      removeTail('right', 'left');
+    }
+
+    var matrix = matrix.extract3x3(screen, oldpos);
+    var matrixExt = mixins.apply(mixins.Matrix, matrix);
+    var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
+
+    eraseLink(matrixExt, matrixConnectorsExt);
+
+    matrix.apply3x3(matrix, screen, oldpos);
+  }
+
+  function clearLook(screen) {
+    var matrix = matrix.extract3x3(screen, screen.cursor);
+    var matrixExt = mixins.apply(mixins.Matrix, matrix);
+    var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
+
+    // TODO: for delete like classic algo
+    // if (matrixExt.center() === ' ') return;
+
+    var connectors = matrixConnectorsExt.all();
+    if (matrixExt.top() === ' ')
+      delete connectors.top;
+
+    if (matrixExt.bottom() === ' ')
+      delete connectors.bottom;
+
+    if (matrixExt.left() === ' ')
+      delete connectors.left;
+
+    if (matrixExt.right() === ' ')
+      delete connectors.right;
+
+    matrixExt.center(matrixConnectorsExt.link(connectors));
+
+    matrix.apply3x3(matrix, screen, screen.cursor);
+  }
+
+  var changes = {
+    isErase: false,
+    direction: null,
+    axis: null
+  };
+
+  if (brush == brushes.BRUSHERASE)
+    changes.isErase = true;
+  if (oldpos.col != newpos.col) {
+    changes.axis = axisEnum.X;
+
+    if (newpos.col - oldpos.col > 0)
+      changes.direction = directionEnum.POSITIVE;
+    else changes.direction = directionEnum.NEGATIVE;
+  }
+  else {
+    changes.axis = axisEnum.Y;
+
+    if (newpos.row - oldpos.row > 0)
+      changes.direction = directionEnum.POSITIVE;
+    else changes.direction = directionEnum.NEGATIVE;
+  }
+
+  if (changes.isErase) {
+    eraseLine(s, oldpos);
+  } else
+    drawLine(s, oldpos, changes);
+
+  clearLook(s);
+}
+
+},{"./brushes.js":3,"./mixins.js":6,"./matrix.js":7}],6:[function(require,module,exports){
+module = module.exports = (function () {
+  var _ = {};
+
+  _.apply = function (obj, target) {
+    var result = {};
+
+    var fn = function(key) {
+      return function() {
+        return obj[key].apply(target, arguments);
+      };
+    };
+
+    for (var key in obj) {
+      result[key] = fn(key);
+    }
+    return result;
+  };
+
+  _.Matrix = {
     top: function(replace) {
       if (replace !== undefined)
         this[0][1] = replace;
@@ -271,7 +433,7 @@ function updateGrid(model, s, oldpos, newpos, brush) {
     }
   };
 
-  var MatrixConnectorsMixin = {
+  _.MatrixConnectors = {
     all: function(current) {
       current = current || {};
 
@@ -398,7 +560,14 @@ function updateGrid(model, s, oldpos, newpos, brush) {
     }
   };
 
-  function extract3x3(screen, oldpos) {
+  return _;
+})();
+
+},{}],7:[function(require,module,exports){
+module = module.exports = (function () {
+  var _ = {};
+
+  _.extract3x3 = function (screen, oldpos) {
     function getValue(offset) {
       var
         x = oldpos.col + offset.x,
@@ -415,9 +584,9 @@ function updateGrid(model, s, oldpos, newpos, brush) {
       [getValue({x: -1, y:  0}), getValue({x: 0, y:  0}), getValue({x: 1, y:  0})],
       [getValue({x: -1, y:  1}), getValue({x: 0, y:  1}), getValue({x: 1, y:  1})]
     ];
-  }
+  };
 
-  function apply3x3(matrix, screen, oldpos) {
+  _.apply3x3 = function (matrix, screen, oldpos) {
     function setValue(offset, value) {
       var
         x = oldpos.col + offset.x,
@@ -434,169 +603,10 @@ function updateGrid(model, s, oldpos, newpos, brush) {
         setValue({x: x-1, y: y-1}, matrix[y][x]);
       }
     }
-  }
-
-  function applyMixin(obj, target) {
-    var result = {};
-
-    var fn = function(key) {
-      return function() {
-        return obj[key].apply(target, arguments);
-      };
-    };
-
-    for (var key in obj) {
-      result[key] = fn(key);
-    }
-    return result;
-  }
-
-  function drawLine(screen, oldpos, changes) {
-
-    function updateLinks(matrix, matrixConnectors, line, side, aside) {
-      function postLinking() {
-        //TODO: kill doubles
-
-        if (matrix[side]() === ' ') return;
-
-        var connectorsNext = matrixConnectors.linkInfo(matrix[side]());
-        connectorsNext[aside] = matrixConnectors.linkInfo(matrix.center())[side];
-        matrix[side](matrixConnectors.link(connectorsNext));
-
-        if (matrix[aside]() === ' ') return;
-
-        var connectorsPrevious = matrixConnectors.linkInfo(matrix[aside]());
-        connectorsPrevious[side] = matrixConnectors.linkInfo(matrix.center())[aside];
-        matrix[aside](matrixConnectors.link(connectorsPrevious));
-      }
-
-      var linkCurrent = matrixConnectors.linkInfo(matrix.center());
-      var connectorsCurrent = matrixConnectors.all(linkCurrent);
-
-      if (Object.keys(connectorsCurrent).length === 0) {
-        matrix.center(line);
-      } else {
-        connectorsCurrent[side] = true;
-        matrix.center(matrixConnectors.link(connectorsCurrent));
-      }
-
-      postLinking();
-    }
-
-    var matrix = extract3x3(screen, oldpos);
-    var matrixExt = applyMixin(MatrixMixin, matrix);
-    var matrixConnectorsExt = applyMixin(MatrixConnectorsMixin, matrixExt);
-    var line = changes.axis === axisEnum.X ? '─' : '│';
-    var link = {
-      from: null,
-      to: null
-    };
-
-    if (changes.axis === axisEnum.X)
-      if (changes.direction === directionEnum.POSITIVE) {
-        link.to = 'right';
-        link.from = 'left';
-      }
-      else {
-        link.to = 'left';
-        link.from = 'right';
-      }
-    else
-    if (changes.direction === directionEnum.POSITIVE) {
-      link.to = 'bottom';
-      link.from = 'top';
-    }
-    else {
-      link.to = 'top';
-      link.from = 'bottom';
-    }
-
-    updateLinks(matrixExt, matrixConnectorsExt, line, link.to, link.from);
-
-    apply3x3(matrix, screen, oldpos);
-  }
-
-  function eraseLine(screen, oldpos) {
-    function eraseLink(matrix, matrixConnectors) {
-      function removeTail(side, aside) {
-        var connectors = matrixConnectors.linkInfo(matrix[aside]());
-        delete connectors[side];
-        matrix[aside](matrixConnectors.link(connectors));
-      }
-
-      matrixExt.center(' ');
-
-      //TODO: kill doubles
-      removeTail('bottom', 'top');
-      removeTail('top', 'bottom');
-      removeTail('left', 'right');
-      removeTail('right', 'left');
-    }
-
-    var matrix = extract3x3(screen, oldpos);
-    var matrixExt = applyMixin(MatrixMixin, matrix);
-    var matrixConnectorsExt = applyMixin(MatrixConnectorsMixin, matrixExt);
-
-    eraseLink(matrixExt, matrixConnectorsExt);
-
-    apply3x3(matrix, screen, oldpos);
-  }
-
-  function clearLook(screen) {
-    var matrix = extract3x3(screen, screen.cursor);
-    var matrixExt = applyMixin(MatrixMixin, matrix);
-    var matrixConnectorsExt = applyMixin(MatrixConnectorsMixin, matrixExt);
-
-    // if (matrixExt.center() === ' ') return;
-
-    var connectors = matrixConnectorsExt.all();
-    if (matrixExt.top() === ' ')
-      delete connectors.top;
-
-    if (matrixExt.bottom() === ' ')
-      delete connectors.bottom;
-
-    if (matrixExt.left() === ' ')
-      delete connectors.left;
-
-    if (matrixExt.right() === ' ')
-      delete connectors.right;
-
-    matrixExt.center(matrixConnectorsExt.link(connectors));
-
-    apply3x3(matrix, screen, screen.cursor);
-  }
-
-  var changes = {
-    isErase: false,
-    direction: null,
-    axis: null
   };
 
-  if (brush == brushes.BRUSHERASE)
-    changes.isErase = true;
-  if (oldpos.col != newpos.col) {
-    changes.axis = axisEnum.X;
+  return _;
+})();
 
-    if (newpos.col - oldpos.col > 0)
-      changes.direction = directionEnum.POSITIVE;
-    else changes.direction = directionEnum.NEGATIVE;
-  }
-  else {
-    changes.axis = axisEnum.Y;
-
-    if (newpos.row - oldpos.row > 0)
-      changes.direction = directionEnum.POSITIVE;
-    else changes.direction = directionEnum.NEGATIVE;
-  }
-
-  if (changes.isErase) {
-    eraseLine(s, oldpos);
-  } else
-    drawLine(s, oldpos, changes);
-
-  clearLook(s);
-}
-
-},{"./brushes.js":3}]},{},[1])
+},{}]},{},[1])
 ;
