@@ -29,7 +29,7 @@ body {
 
 .modelLabel {
   display: inline-block;
-  width: 150px;
+  width: 80px;
   text-align : right;
   margin-right: 10px;
 }
@@ -75,21 +75,33 @@ function assert( outcome, description ) {
 <script>
 
 
-var model = {
-  gridRows : 24,
+var init_model = {
+  gridRows : 30,
   gridCols : 80,
   fontFamily : 'courier' ,
   fontSize : '12',
   speed : 1,
-  type : 'simple',
+  type : 'block'
+};
+var lines = [];
+var cursor = {};
+var model = init_model;
+
+
+
+function reset_settings() {
+  model = init_model;
+  redrawModel();
 }
-var lines = []
-var cursor = {}
 
-
-
-function restart() {
+function apply() {
   unsortedKeys(model).forEach(function(field) { if ($('#'+field).val()) model[field] = $('#'+field).val() })
+//  assert(false,JSON.stringify(state))
+  redrawModel()
+}
+
+
+function clear() {
   var state = eng.reset(model)
 //  assert(false,JSON.stringify(state))
   lines = state.lines
@@ -146,7 +158,7 @@ function drawGrid() {
       p = $('<p>').html(escapeHTML(s));
     d.append(p.css({'margin-top':0, 'margin-bottom':0 }))
   }
-  d.css({ 'font-family' : model.fontFamily, 'font-size' : model.fontSize, 'word-wrap': 'break-word', 'margin-top':0, 'margin-bottom':0 })
+  d.css({ 'font-family' : model.fontFamily, 'font-size' : model.fontSize, 'word-wrap': 'break-word', 'margin-top':0, 'margin-bottom':0, 'line-height': '90%' })
   return d;
 }
 
@@ -159,18 +171,16 @@ function drawModelField(field) {
 
 function drawModelEditor() {
   var d = $('<div/>')
+  d.append($('<button type="button" onclick="apply()">Apply Settings</button>'))
+   .append($('<button type="button" onclick="clear()">Clear Grid</button>'))
+   .append($('<button type="button" onclick="reset_settings()">Reset Settings</button>'));
   unsortedKeys(model).forEach(function(field) { d.append(drawModelField(field)) })
   return d
 }
 
 function drawControlPanel() {
   var d = $('<div/>');
-  d.append($('<button type="button" onclick="restart()">Restart</button>'))
-  d.append($('<button type="button" onclick="move(left)">Left</button>'))
-  d.append($('<button type="button" onclick="move(right)">Right</button>'))
-  d.append($('<button type="button" onclick="move(up)">Up</button>'))
-  d.append($('<button type="button" onclick="move(down)">Down</button>'))
-  d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw single lines, Shift+Cmd/Meta for double lines. Press Alt to Erase'))
+  d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw single lines, Shift+Cmd/Meta for double lines. Press Alt to Erase. Allowed types are block and simple'))
   d.append(drawModelEditor())
   d.append($('<a href="https://github.com/ogt/boxchareditor"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>'));
   return d;
@@ -191,7 +201,8 @@ function redrawModel() {
 
 $(function () {
 //  _stringPasteTester()
-  restart()
+  clear();
+  reset_settings();
 })
 
 </script>
