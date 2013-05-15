@@ -94,14 +94,21 @@ function reset_settings() {
   redrawModel();
 }
 
-function apply() {
+function apply_settings() {
+  var old_model = {};
+  unsortedKeys(model).forEach(function(field) { old_model[field] = model[field]; })
   unsortedKeys(model).forEach(function(field) { if ($('#'+field).val()) model[field] = $('#'+field).val() })
 //  assert(false,JSON.stringify(state))
-  redrawModel()
+  if (old_model['gridRows'] != model['gridRows']  || old_model['gridCols'] != model['gridCols']) {
+    clear_grid();
+  }
+  else {
+    redrawModel();
+  }
 }
 
 
-function clear() {
+function clear_grid() {
   var state = eng.reset(model)
 //  assert(false,JSON.stringify(state))
   lines = state.lines
@@ -171,8 +178,8 @@ function drawModelField(field) {
 
 function drawModelEditor() {
   var d = $('<div/>')
-  d.append($('<button type="button" onclick="apply()">Apply Settings</button>'))
-   .append($('<button type="button" onclick="clear()">Clear Grid</button>'))
+  d.append($('<button type="button" onclick="apply_settings()">Apply Settings</button>'))
+   .append($('<button type="button" onclick="clear_grid()">Clear Grid</button>'))
    .append($('<button type="button" onclick="reset_settings()">Reset Settings</button>'));
   unsortedKeys(model).forEach(function(field) { d.append(drawModelField(field)) })
   return d
@@ -180,8 +187,8 @@ function drawModelEditor() {
 
 function drawControlPanel() {
   var d = $('<div/>');
-  d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw single lines, Shift+Cmd/Meta for double lines. Press Alt to Erase. Allowed types are block and simple'))
-  d.append($('<p class="subtle">').text('Select the area that you drew and copy and paste it into your editor'))
+  d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw single lines, Shift+Cmd/Meta for double lines. Press Alt to Erase. Allowed types are block and simple. You can switch between the two without clearing the grid'))
+  d.append($('<p class="subtle">').text('Select the area that you drew and copy and paste it into your editor. Changing the rows/cols clears the grid'))
   d.append(drawModelEditor())
   d.append($('<a href="https://github.com/ogt/boxchareditor"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>'));
   return d;
@@ -202,7 +209,7 @@ function redrawModel() {
 
 $(function () {
 //  _stringPasteTester()
-  clear();
+  clear_grid();
   reset_settings();
 })
 
