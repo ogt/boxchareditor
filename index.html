@@ -87,6 +87,49 @@ var lines = [];
 var cursor = {};
 var model = init_model;
 
+var selection_init_model = {
+  fromRow : 0,
+  fromCol : 0,
+  toRow : 0,
+  toCol : 0
+};
+
+var selection_model = selection_init_model;
+
+function select_area() {
+  unsortedKeys(selection_model).forEach(function(field) { if ($('#'+field).val()) selection_model[field] = parseInt($('#'+field).val(), 10) })
+  if (isValidSelection(selection_model)) {
+    copyToClipboard(exportSelectedAreaAsText(selection_model))
+  } else {
+    window.alert("Invalid selection, fix & try again!");
+  }
+}
+
+function isValidSelection(selection_model) {
+  return isValidRow(selection_model.fromRow) && isValidCol(selection_model.fromCol)
+        && isValidRow(selection_model.toRow) && isValidCol(selection_model.toCol)
+        && selection_model.fromRow <= selection_model.toRow
+        && (selection_model.fromCol <= selection_model.toCol)
+}
+
+function isValidRow(row) {
+  console.log([row, model.gridRows, row >= 0 && row <= model.gridRows]);
+  return row >= 0 && row < model.gridRows;
+}
+
+function isValidCol(col) {
+  console.log([col, model.gridCols, col >= 0 && col <= model.gridCols]);
+  return col >= 0 && col < model.gridCols;
+}
+
+function copyToClipboard (text) {
+  window.prompt ("Copy to clipboard: Ctrl+C, Enter", text)
+}
+
+function reset_selection() {
+  selection_model = selection_init_model
+  unsortedKeys(selection_model).forEach(function(field) { $('#'+field).attr("value", selection_model[field]);})
+}
 
 
 function reset_settings() {
@@ -144,6 +187,7 @@ function keyPressed(e) {
 
   lines = state.lines
   cursor = state.cursor
+  updateCursorField(cursor);
   fastRedrawModel();
 }
 
@@ -169,7 +213,16 @@ function drawGrid() {
   return d;
 }
 
-function drawModelField(field) {
+function updateCursorField(cursor){
+  $("#cursorRow").text(cursor.row);
+  $("#cursorCol").text(cursor.col);
+}
+
+function exportSelectedAreaAsText(selection_model) {
+  return grid_utils.to_string(eng.copy(model,{ lines : lines, cursor : cursor}, selection_model));
+}
+
+function drawModelField(model, field) {
   var d = $('<div class="modelField"/>')
   d.append($('<label class="modelLabel subtle"/>').attr('for',field).text(field))
   d.append($('<input type="text" class="subtle"/>').attr('id',field).attr('value', model[field]))
@@ -181,7 +234,16 @@ function drawModelEditor() {
   d.append($('<button type="button" onclick="apply_settings()">Apply Settings</button>'))
    .append($('<button type="button" onclick="clear_grid()">Clear Grid</button>'))
    .append($('<button type="button" onclick="reset_settings()">Reset Settings</button>'));
-  unsortedKeys(model).forEach(function(field) { d.append(drawModelField(field)) })
+  unsortedKeys(model).forEach(function(field) { d.append(drawModelField(model, field)) })
+  return d
+}
+
+
+function drawSelectionEditor() {
+  var d = $('<div/>')
+  d.append($('<button type="button" onclick="select_area()">Select Area</button>'))
+   .append($('<button type="button" onclick="reset_selection()">Reset Selection</button>'))
+  unsortedKeys(selection_model).forEach(function(field) { d.append(drawModelField(selection_model, field));})
   return d
 }
 
@@ -189,7 +251,9 @@ function drawControlPanel() {
   var d = $('<div/>');
   d.append($('<p class="subtle">').text('Use your arrow keys. Press Shift to draw single lines, Shift+Cmd/Meta for double lines. Press Alt to Erase. Allowed types are block and simple. You can switch between the two without clearing the grid'))
   d.append($('<p class="subtle">').text('Select the area that you drew and copy and paste it into your editor. Changing the rows/cols clears the grid'))
+  d.append($('<p>').html('Cursor <span id="cursorRow"/>, <span id="cursorCol"/>'))
   d.append(drawModelEditor())
+  d.append(drawSelectionEditor())
   d.append($('<a href="https://github.com/ogt/boxchareditor"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>'));
   return d;
 }
