@@ -113,12 +113,12 @@ function isValidSelection(selection_model) {
 }
 
 function isValidRow(row) {
-  console.log([row, model.gridRows, row >= 0 && row < model.gridRows]);
+  console.log([row, model.gridRows, row >= 0 && row <= model.gridRows]);
   return row >= 0 && row < model.gridRows;
 }
 
 function isValidCol(col) {
-  console.log([col, model.gridCols, col >= 0 && col < model.gridCols]);
+  console.log([col, model.gridCols, col >= 0 && col <= model.gridCols]);
   return col >= 0 && col < model.gridCols;
 }
 
@@ -220,9 +220,9 @@ function updateCursorField(cursor){
 
 function exportSelectedAreaAsText(selection_model) {
   var text = '';
-  for (var i=selection_model.fromRow;i<selection_model.toRow;i++) {
+  for (var i=selection_model.fromRow; i<= selection_model.toRow;i++) {
     var copy = [].concat(lines[i]);
-    var s = copy.splice(selection_model.fromCol, selection_model.toCol).join('');
+    var s = copy.splice(selection_model.fromCol, selection_model.toCol+1).join('');
     text = text.concat(s, '\n');
   }
   return text;
