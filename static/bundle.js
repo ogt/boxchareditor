@@ -1,11 +1,13 @@
 ;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
-(function(){/*global eng:true, brushes:true */
+(function(){/*global eng:true, brushes:true, grid_utils:true */
 eng = require('./drawingengine.js');
 
 brushes = require('./brushes.js');
 
+grid_utils = require('./grid_utils.js');
+
 })()
-},{"./drawingengine.js":2,"./brushes.js":3}],3:[function(require,module,exports){
+},{"./drawingengine.js":2,"./brushes.js":3,"./grid_utils.js":4}],3:[function(require,module,exports){
 module = module.exports = (function () {
 
 var _ = {};
@@ -20,6 +22,30 @@ return _;
 
 })();
 
+},{}],4:[function(require,module,exports){
+// grid operations
+module = module.exports = (function () {
+var _ = {};
+
+_.from_string = function (s) {
+	var list = s.split('\n');
+    var lines = [];
+    for (var i=0;i< list.length;i++) {
+      lines[i] = list[i].split('');
+    }
+    return lines;
+};
+_.to_string = function (g) {
+	var list = [];
+	for (var i=0;i<g.length;i++) {
+    list[i] = g[i].join('');
+	}
+	return list.join('\n');
+};
+
+
+return _;
+})();
 },{}],2:[function(require,module,exports){
 // engine begins
 /*
@@ -92,6 +118,33 @@ _.move = function (model,s, moves) {
   return s;
 };
 
+// Copys the data within the selected bounds
+// and returns it as a new grid.
+_.copy = function(model, s, selectionBounds) {
+  if (!isValidSelection(model, selectionBounds)){
+    throw {name: "InvalidBounds", message: "Bounds for selection not valid"};
+  }
+  var selectedContent = [];
+  for (var i=selectionBounds.fromRow; i<= selectionBounds.toRow;i++) {
+    var copy = [].concat(s.lines[i]);
+    selectedContent.push(copy.splice(selectionBounds.fromCol, selectionBounds.toCol - selectionBounds.fromCol + 1));
+  }
+  return selectedContent;
+};
+
+function isValidSelection(model, selectionBounds) {
+  return isValidRow(model, selectionBounds.fromRow) && isValidCol(model, selectionBounds.fromCol) && 
+    isValidRow(model, selectionBounds.toRow) && isValidCol(model, selectionBounds.toCol) && 
+    selectionBounds.fromRow <= selectionBounds.toRow && selectionBounds.fromCol <= selectionBounds.toCol;
+}
+
+function isValidRow(model, row) {
+  return row >= 0 && row < model.gridRows;
+}
+
+function isValidCol(model, col) {
+  return col >= 0 && col < model.gridCols;
+}
 
 
 // internal functions
@@ -141,7 +194,7 @@ return _;
 })();
 // end of engine
 
-},{"./brushes.js":3,"./simplelines.js":4,"./blocklines.js":5}],4:[function(require,module,exports){
+},{"./brushes.js":3,"./simplelines.js":5,"./blocklines.js":6}],5:[function(require,module,exports){
 module = module.exports =  updateGrid;
 
 var brushes = require('./brushes.js');
@@ -209,7 +262,7 @@ function updateGrid(model,s,oldpos, newpos, brush) {
   }
 }
 
-},{"./brushes.js":3}],5:[function(require,module,exports){
+},{"./brushes.js":3}],6:[function(require,module,exports){
 /**
  * Created with JetBrains WebStorm.
  * User: http://github.com/GulinSS
@@ -381,7 +434,52 @@ function updateGrid(model, s, oldpos, newpos, brush) {
   clearLook(s);
 }
 
-},{"./brushes.js":3,"./mixins.js":6,"./matrix3x3.js":7}],6:[function(require,module,exports){
+},{"./brushes.js":3,"./matrix3x3.js":7,"./mixins.js":8}],7:[function(require,module,exports){
+module = module.exports = (function () {
+  var _ = {};
+
+  _.extract3x3 = function (model, screen, oldpos) {
+    function getValue(offset) {
+      var
+        x = oldpos.col + offset.x,
+        y = oldpos.row + offset.y;
+
+      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
+        return ' ';
+
+      return screen.lines[y][x];
+    }
+
+    return [
+      [getValue({x: -1, y: -1}), getValue({x: 0, y: -1}), getValue({x: 1, y: -1})],
+      [getValue({x: -1, y:  0}), getValue({x: 0, y:  0}), getValue({x: 1, y:  0})],
+      [getValue({x: -1, y:  1}), getValue({x: 0, y:  1}), getValue({x: 1, y:  1})]
+    ];
+  };
+
+  _.apply3x3 = function (model, matrix, screen, oldpos) {
+    function setValue(offset, value) {
+      var
+        x = oldpos.col + offset.x,
+        y = oldpos.row + offset.y;
+
+      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
+        return;
+
+      screen.lines[y][x] = value;
+    }
+
+    for(var x = 0; x < 3; x++) {
+      for(var y = 0; y < 3; y++) {
+        setValue({x: x-1, y: y-1}, matrix[y][x]);
+      }
+    }
+  };
+
+  return _;
+})();
+
+},{}],8:[function(require,module,exports){
 module = module.exports = (function () {
   var _ = {};
 
@@ -557,51 +655,6 @@ module = module.exports = (function () {
         right: true,
         bottom: true
       };
-    }
-  };
-
-  return _;
-})();
-
-},{}],7:[function(require,module,exports){
-module = module.exports = (function () {
-  var _ = {};
-
-  _.extract3x3 = function (model, screen, oldpos) {
-    function getValue(offset) {
-      var
-        x = oldpos.col + offset.x,
-        y = oldpos.row + offset.y;
-
-      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
-        return ' ';
-
-      return screen.lines[y][x];
-    }
-
-    return [
-      [getValue({x: -1, y: -1}), getValue({x: 0, y: -1}), getValue({x: 1, y: -1})],
-      [getValue({x: -1, y:  0}), getValue({x: 0, y:  0}), getValue({x: 1, y:  0})],
-      [getValue({x: -1, y:  1}), getValue({x: 0, y:  1}), getValue({x: 1, y:  1})]
-    ];
-  };
-
-  _.apply3x3 = function (model, matrix, screen, oldpos) {
-    function setValue(offset, value) {
-      var
-        x = oldpos.col + offset.x,
-        y = oldpos.row + offset.y;
-
-      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
-        return;
-
-      screen.lines[y][x] = value;
-    }
-
-    for(var x = 0; x < 3; x++) {
-      for(var y = 0; y < 3; y++) {
-        setValue({x: x-1, y: y-1}, matrix[y][x]);
-      }
     }
   };
 

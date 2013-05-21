@@ -219,13 +219,7 @@ function updateCursorField(cursor){
 }
 
 function exportSelectedAreaAsText(selection_model) {
-  var text = '';
-  for (var i=selection_model.fromRow; i<= selection_model.toRow;i++) {
-    var copy = [].concat(lines[i]);
-    var s = copy.splice(selection_model.fromCol, selection_model.toCol+1).join('');
-    text = text.concat(s, '\n');
-  }
-  return text;
+  return grid_utils.to_string(eng.copy(model,{ lines : lines, cursor : cursor}, selection_model));
 }
 
 function drawModelField(model, field) {
