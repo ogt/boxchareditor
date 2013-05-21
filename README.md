@@ -93,7 +93,8 @@ To run locally:
     > npm install
     > open index.html
 
-To make local changes:
+
+To make changes:
 
     > hub clone ogt/boxchareditor && cd boxchareditor
     > npm install
@@ -105,6 +106,8 @@ The step `make bundle` is needed because the majority of the code is in modules 
 `make bundle` is flattening the `./main.js` into `static/bundle.js` that is `src`ed by `./index.html`.
 We follow this style to allow the same code to be used by the browser as well as node-tested by test scripts that 
 can be run automatically from services that support nodejs continuous integration (like travis-ci).
+
+## Contributions
 
 If you plan to contribute back your changes you should make sure that 
 - you add unit tests for all functionality described in the issue
