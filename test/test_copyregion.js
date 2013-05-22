@@ -76,3 +76,69 @@ test('copy an area enclosing a rectangle', function (t) {
 });
 
 
+test('invalid selection bounds', function (t) {
+  t.plan(0);
+  var input = [
+    '                   ',
+    '          ┌┐       ',
+    '          └┘       ',
+    '                   '
+  ];
+  try {
+    copySelection(input, {fromRow: 0, fromCol: 0, toRow: input.length, toCol: input[0].length-1});
+    t.fail("toRow greater than gird size didn't throw error");
+  } catch(error) {
+    // ignore
+  }
+
+  try {
+    copySelection(input, {fromRow: 0, fromCol: 0, toRow: input.length-1, toCol: input[0].length});
+    t.fail("toCol greater than gird size didn't throw error");
+  } catch(error) {
+    // ignore
+  }
+
+  try {
+    copySelection(input, {fromRow: 1, fromCol: 0, toRow: 0, toCol: input[0].length-1});
+    t.fail("fromRow greater than toRow didn't throw error");
+  } catch(error) {
+    // ignore
+  }
+  
+  try {
+    copySelection(input, {fromRow: 0, fromCol: 1, toRow: 0, toCol: 0});
+    t.fail("fromCol greater than toCol didn't throw error");
+  } catch(error) {
+    // ignore
+  }
+
+  try {
+    copySelection(input, {fromRow: -1, fromCol: 1, toRow: input.length-1, toCol: input.length-1});
+    t.fail("negative fromRow didn't throw error");
+  } catch(error) {
+    // ignore
+  }
+
+  try {
+    copySelection(input, {fromRow: 0, fromCol: -1, toRow: input.length-1, toCol: input.length-1});
+    t.fail("negative fromCol didn't throw error");
+  } catch(error) {
+    // ignore
+  }
+
+  try {
+    copySelection(input, {fromRow: 0, fromCol: 0, toRow: -1, toCol: input.length-1});
+    t.fail("negative toRow didn't throw error");
+  } catch(error) {
+    // ignore
+  }
+
+  try {
+    copySelection(input, {fromRow: 0, fromCol: 0, toRow: 0, toCol: -1});
+    t.fail("negative toCol didn't throw error");
+  } catch(error) {
+    // ignore
+  }
+});
+
+
