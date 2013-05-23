@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta charset="utf-8"/>
@@ -34,6 +34,28 @@ body {
   margin-right: 10px;
 }
 
+  #storeList {
+    border:solid 1px rgb(136, 144, 153);
+    width:300px;
+  }
+
+  #storeList > ul {
+    list-style-type: none;
+    margin:0px;
+    padding:0px;
+  }
+    #storeList > ul {
+      margin-left:3px;
+    }
+  #storeList > ul > li:hover {
+    cursor:pointer;
+  }
+
+  #storeList > ul :nth-child(odd) {
+    background-color:#c0d4ee;
+  }
+
+
 
 </style>
 </head>
@@ -41,7 +63,7 @@ body {
 <script src="js/jquery.js"></script>
 <script src="js/myutil.js"></script>
 <script src="static/bundle.js"></script>
-
+<script src="http://cdn.openkeyval.org/statics/openkeyval.packed.js"></script>
 
 <!-- TEST FRAMEWORK BEGINS -->
 <!-- http://net.tutsplus.com/tutorials/javascript-ajax/quick-tip-quick-and-easy-javascript-testing-with-assert/ -->
@@ -70,8 +92,6 @@ function assert( outcome, description ) {
 </script>
 <!-- TEST FRAMEWORK ENDS -->
 
-
-
 <script>
 
 
@@ -96,6 +116,8 @@ var selection_init_model = {
 
 var selection_model = selection_init_model;
 
+var store_model = { name: '' };
+
 function select_area() {
   unsortedKeys(selection_model).forEach(function(field) { if ($('#'+field).val()) selection_model[field] = parseInt($('#'+field).val(), 10) })
   if (isValidSelection(selection_model)) {
@@ -103,6 +125,66 @@ function select_area() {
   } else {
     window.alert("Invalid selection, fix & try again!");
   }
+}
+
+var keyBase = 'boxchareditor-';
+
+
+function store() {
+    unsortedKeys(store_model).forEach(function (field) { if ($('#' + field).val()) store_model[field] = $('#' + field).val() })
+
+    window.remoteStorage.setItem(keyBase + store_model.name + '-name', JSON.stringify(model));
+    
+    function getLineStorer(key, value) {
+      return function () { window.remoteStorage.setItem(key, value); }
+    }
+
+    for (var i = 0; i < model.gridRows; i++) {
+      setTimeout(getLineStorer(keyBase + store_model.name +'-table-' + i , JSON.stringify(lines[i])), i*60+60);
+    }
+    addListItem(store_model.name, fillStoreList);
+}
+
+function retrieve(parName) {
+  function getRowLoader(parRow, parName) {
+    return function () {
+      window.remoteStorage.getItem(parName, function (value, key) {
+        lines[parRow] = JSON.parse(value)
+        fastRedrawModel();
+      });
+    };
+  }
+  window.remoteStorage.getItem(keyBase + parName + '-name', function (value, key) {
+    model = JSON.parse(value);
+    store_model.name = parName;
+    for (var i = 0; i < model.gridRows; i++) {
+      setTimeout(getRowLoader(i, keyBase + parName + '-table-' + i), i * 60);
+    }
+    redrawModel();
+  });
+}
+
+function addListItem(name,callback) {
+  getListItems(function (items) {
+    exist = false;
+    for (obj in items) {
+      if (items[obj].name === name) {
+        items[obj].date = new Date();
+        exist = true;
+      }
+    }
+    if (!exist) {
+      items.push({ name: name, date: new Date() })
+    }
+    window.remoteStorage.setItem(keyBase + 'list', JSON.stringify(items), callback(items));
+  });
+}
+
+function getListItems(callback) {
+  window.remoteStorage.getItem(keyBase + 'list', function (value, key) {
+    var items = JSON.parse(value);
+    callback(items);
+  });
 }
 
 function isValidSelection(selection_model) {
@@ -173,13 +255,20 @@ function keyPressed(e) {
     case UPARROW : 
       dir = 'U'; break;
     case DOWNARROW :
-      dir = 'D'; break;
+      dir = 'D'; 
+      e.preventDefault();
+      break;
     default:
+      
   }
   var brush = brushes.NOBRUSH
   if (e.shiftKey) brush = brushes.BRUSHSINGLE;
   if (e.altKey) brush = brushes.BRUSHERASE;
   if (e.shiftKey && e.metaKey) brush = brushes.BRUSHDOUBLE;
+  if (e.ctrlKey) {
+      brush = brushes.BRUSHDOUBLE;
+
+  }
 
   var speed = $('#speed').val() || model.speed;
   
@@ -238,13 +327,39 @@ function drawModelEditor() {
   return d
 }
 
-
 function drawSelectionEditor() {
   var d = $('<div/>')
   d.append($('<button type="button" onclick="select_area()">Select Area</button>'))
    .append($('<button type="button" onclick="reset_selection()">Reset Selection</button>'))
   unsortedKeys(selection_model).forEach(function(field) { d.append(drawModelField(selection_model, field));})
   return d
+}
+
+function drawStoreEditor() {
+  var d = $('<div/>');
+  d.append($('<button type="button" onclick="store()">Store</button>'));
+  unsortedKeys(store_model).forEach(function (field) { d.append(drawModelField(store_model, field)); });
+    return d;
+}
+
+
+function fillStoreList(parStoreList) {
+  var li;
+  var ul = $('#storeList >ul');
+  ul.empty();
+  parStoreList.sort(function (a, b) { if (a.date > b.date) return false; return true; });
+  for (var i = 0; i < parStoreList.length; i++) {
+    li = $('<li>');
+    li.text(parStoreList[i].name);
+    li.click((function (name) { return function () { retrieve(name); }; })(parStoreList[i].name));//need closure over name
+    ul.append(li);
+  }
+}
+
+function drawStoreList() {
+  var d = $('<div id="storeList"/>');
+  d.append($('<ul></ul>'));
+  return d;
 }
 
 function drawControlPanel() {
@@ -254,6 +369,9 @@ function drawControlPanel() {
   d.append($('<p>').html('Cursor <span id="cursorRow"/>, <span id="cursorCol"/>'))
   d.append(drawModelEditor())
   d.append(drawSelectionEditor())
+  d.append(drawStoreEditor());
+  d.append(drawStoreList);
+
   d.append($('<a href="https://github.com/ogt/boxchareditor"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>'));
   return d;
 }
@@ -269,6 +387,9 @@ function redrawModel() {
   $('.content').append($('<hr/>'))
   $('.content').append(drawControlPanel())
   fastRedrawModel();
+  getListItems(function (items) {
+    fillStoreList(items);
+  });
 }
 
 $(function () {
