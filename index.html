@@ -58,6 +58,7 @@ body {
 
 
 </style>
+<style id="grid-font"></style>
 </head>
 <body onKeyDown="keyPressed(event)" >
 <script src="js/jquery.js"></script>
@@ -298,7 +299,7 @@ function drawGrid() {
       p = $('<p>').html(escapeHTML(s));
     d.append(p.css({'margin-top':0, 'margin-bottom':0 }))
   }
-  d.css({ 'font-family' : model.fontFamily, 'font-size' : model.fontSize, 'word-wrap': 'break-word', 'margin-top':0, 'margin-bottom':0, 'line-height': '90%' })
+  d.css({'word-wrap': 'break-word', 'margin-top':0, 'margin-bottom':0, 'line-height': '90%' })
   return d;
 }
 
@@ -336,7 +337,7 @@ function drawSelectionEditor() {
 }
 
 function drawPaste() {
-  var textarea = $('<textarea placeholder="Enter text to paste here" rows="5" cols="30"/>');
+  var textarea = $('<textarea class="grid" placeholder="Enter text to paste here" rows="5" cols="30"/>');
   var button = $('<button>Paste at cursor</button>').click(function() {
     grid_utils.copy(lines, textarea.val().split('\n'), cursor);
     redrawModel();
@@ -390,12 +391,17 @@ function fastRedrawModel() {
    $('#grid').empty().append(drawGrid())
 }
 
+function updateFontStyle() {
+  $('#grid-font').text('.grid {font-family:' + model.fontFamily + '; font-size:' + model.fontSize + ';}');
+}
+
 function redrawModel() {
   $('.content').empty().append($('<p class="header">').text('A box character editor'))
   $('.content').append($('<hr/>'))
-  $('.content').append($('<div id="grid" />'))
+  $('.content').append($('<div id="grid" class="grid" />'))
   $('.content').append($('<hr/>'))
   $('.content').append(drawControlPanel())
+  updateFontStyle();
   fastRedrawModel();
   getListItems(function (items) {
     fillStoreList(items);
