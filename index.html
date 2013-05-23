@@ -335,6 +335,15 @@ function drawSelectionEditor() {
   return d
 }
 
+function drawPaste() {
+  var textarea = $('<textarea placeholder="Enter text to paste here" rows="5" cols="30"/>');
+  var button = $('<button>Paste at cursor</button>').click(function() {
+    grid_utils.copy(lines, textarea.val().split('\n'), cursor);
+    redrawModel();
+  });
+  return $('<div/>').append(button).append($('<br>')).append(textarea);
+}
+
 function drawStoreEditor() {
   var d = $('<div/>');
   d.append($('<button type="button" onclick="store()">Store</button>'));
@@ -369,6 +378,7 @@ function drawControlPanel() {
   d.append($('<p>').html('Cursor <span id="cursorRow"/>, <span id="cursorCol"/>'))
   d.append(drawModelEditor())
   d.append(drawSelectionEditor())
+  d.append(drawPaste())
   d.append(drawStoreEditor());
   d.append(drawStoreList);
 
