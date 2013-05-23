@@ -34,6 +34,28 @@ body {
   margin-right: 10px;
 }
 
+  #storeList {
+    border:solid 1px rgb(136, 144, 153);
+    width:300px;
+  }
+
+  #storeList > ul {
+    list-style-type: none;
+    margin:0px;
+    padding:0px;
+  }
+    #storeList > ul {
+      margin-left:3px;
+    }
+  #storeList > ul > li:hover {
+    cursor:pointer;
+  }
+
+  #storeList > ul :nth-child(odd) {
+    background-color:#c0d4ee;
+  }
+
+
 
 </style>
 </head>
@@ -111,58 +133,16 @@ var keyBase = 'boxchareditor-';
 function store() {
     unsortedKeys(store_model).forEach(function (field) { if ($('#' + field).val()) store_model[field] = $('#' + field).val() })
 
-    $.ajax({
-        url: "http://api.openkeyval.org/store/",
-        data: keyBase + store_model.name +'-name=' + JSON.stringify(model),
-        dataType: "jsonp",
-        success: function (data) {
-            alert("Saved " + data);
-        }
-    });
-    for (var i = 0; i < model.gridRows; i++) {
-      setTimeout(window.remoteStorage.setItem, i*80,keyBase + store_model.name +'-table-' + i , JSON.stringify(lines[i]));
-      /*
-        $.ajax({
-            url: "http://api.openkeyval.org/store/",
-            data: keyBase + store_model.name +'-table-' + i + '=' + JSON.stringify(lines[i]),
-            dataType: "jsonp",
-            success: function (data) {
-                //alert("Saved " + data);
-            }
-        });*/
+    window.remoteStorage.setItem(keyBase + store_model.name + '-name', JSON.stringify(model));
+    
+    function getLineStorer(key, value) {
+      return function () { window.remoteStorage.setItem(key, value); }
     }
 
-    $.ajax({
-        url: "http://api.openkeyval.org/"+ keyBase+"list",
-        dataType: "jsonp",
-        success: function (data) {
-            var filelist = [];
-            if (data!=='null') {
-                filelist = JSON.parse(data);
-            }
-            filelist.push({ name: store_model.name, date: new Date() })
-            //load the lines
-            window.remoteStorage.deleteItem(keyBase + 'list', function () {
-                window.remoteStorage.setItem(keyBase + 'list', JSON.stringify(filelist));
-            });
-            /*$.ajax({
-                url: "http://api.openkeyval.org/store/",
-                data: keyBase + 'list=' + JSON.stringify(filelist),
-                dataType: "jsonp",
-                success: function (data) {
-                    //alert("Saved " + data);
-                }
-            });*/
-            //render filelist
-            alert(data);
-        }
-    });
-
-    //window.remoteStorage.setItem(keyBase + 'name-' + name, JSON.stringify(model));
-    //alert(keyBase + 'name-' + name);
-    //window.remoteStorage.setItem(keyBase + 'table-' + name, JSON.stringify(table));
-    //alert(keyBase + 'table-' + name);
-
+    for (var i = 0; i < model.gridRows; i++) {
+      setTimeout(getLineStorer(keyBase + store_model.name +'-table-' + i , JSON.stringify(lines[i])), i*60+60);
+    }
+    addListItem(store_model.name, fillStoreList);
 }
 
 function retrieve(parName) {
@@ -170,23 +150,41 @@ function retrieve(parName) {
     return function () {
       window.remoteStorage.getItem(parName, function (value, key) {
         lines[parRow] = JSON.parse(value)
+        fastRedrawModel();
       });
     };
   }
-
   window.remoteStorage.getItem(keyBase + parName + '-name', function (value, key) {
     model = JSON.parse(value);
+    store_model.name = parName;
     for (var i = 0; i < model.gridRows; i++) {
-      setTimeout(getRowLoader(i, keyBase + parName + '-table-' + i), i * 80);
+      setTimeout(getRowLoader(i, keyBase + parName + '-table-' + i), i * 60);
     }
-
     redrawModel();
-    setTimeout(fastRedrawModel, 2000);
   });
 }
 
-function getDrawingList() {
-    alert(store.list());
+function addListItem(name,callback) {
+  getListItems(function (items) {
+    exist = false;
+    for (obj in items) {
+      if (items[obj].name === name) {
+        items[obj].date = new Date();
+        exist = true;
+      }
+    }
+    if (!exist) {
+      items.push({ name: name, date: new Date() })
+    }
+    window.remoteStorage.setItem(keyBase + 'list', JSON.stringify(items), callback(items));
+  });
+}
+
+function getListItems(callback) {
+  window.remoteStorage.getItem(keyBase + 'list', function (value, key) {
+    var items = JSON.parse(value);
+    callback(items);
+  });
 }
 
 function isValidSelection(selection_model) {
@@ -257,8 +255,11 @@ function keyPressed(e) {
     case UPARROW : 
       dir = 'U'; break;
     case DOWNARROW :
-      dir = 'D'; break;
+      dir = 'D'; 
+      e.preventDefault();
+      break;
     default:
+      
   }
   var brush = brushes.NOBRUSH
   if (e.shiftKey) brush = brushes.BRUSHSINGLE;
@@ -336,8 +337,7 @@ function drawSelectionEditor() {
 
 function drawStoreEditor() {
   var d = $('<div/>');
-  d.append($('<button type="button" onclick="store()">Store</button>'))
-   .append($('<button type="button" onclick="reset_selection()">Reset Selection</button>'));
+  d.append($('<button type="button" onclick="store()">Store</button>'));
   unsortedKeys(store_model).forEach(function (field) { d.append(drawModelField(store_model, field)); });
     return d;
 }
@@ -350,7 +350,7 @@ function fillStoreList(parStoreList) {
   parStoreList.sort(function (a, b) { if (a.date > b.date) return false; return true; });
   for (var i = 0; i < parStoreList.length; i++) {
     li = $('<li>');
-    li.text(JSON.stringify(parStoreList[i]));
+    li.text(parStoreList[i].name);
     li.click((function (name) { return function () { retrieve(name); }; })(parStoreList[i].name));//need closure over name
     ul.append(li);
   }
@@ -359,12 +359,6 @@ function fillStoreList(parStoreList) {
 function drawStoreList() {
   var d = $('<div id="storeList"/>');
   d.append($('<ul></ul>'));
-  window.remoteStorage.setShouldMemoize(false);
-  window.remoteStorage.getItem(keyBase + 'list', function (value,key) {
-    var items = JSON.parse(value);
-    fillStoreList(items);
-  });
-  window.remoteStorage.setShouldMemoize(true);
   return d;
 }
 
@@ -393,6 +387,9 @@ function redrawModel() {
   $('.content').append($('<hr/>'))
   $('.content').append(drawControlPanel())
   fastRedrawModel();
+  getListItems(function (items) {
+    fillStoreList(items);
+  });
 }
 
 $(function () {
