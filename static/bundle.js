@@ -43,9 +43,25 @@ _.to_string = function (g) {
 	return list.join('\n');
 };
 
+/** Copy one grid onto another
+ * dst: destination grid
+ * src: source grid; may be ragged (row lengths not equal)
+ * offset: from the origin of the destination grid {row: #, col: #}
+ */
+_.copy = function(dst, src, offset) {
+    var rows = Math.min(src.length, dst.length - offset.row);
+    for (var row_i=0; row_i < rows; row_i++) {
+      var dst_row = dst[row_i + offset.row];
+      var cols = Math.min(src[row_i].length, dst_row.length - offset.col);
+      for (var col_i=0; col_i < cols; col_i++)
+        dst_row[col_i + offset.col] = src[row_i][col_i];
+    }
+    return dst;
+};
 
 return _;
 })();
+
 },{}],2:[function(require,module,exports){
 // engine begins
 /*
@@ -434,52 +450,7 @@ function updateGrid(model, s, oldpos, newpos, brush) {
   clearLook(s);
 }
 
-},{"./brushes.js":3,"./matrix3x3.js":7,"./mixins.js":8}],7:[function(require,module,exports){
-module = module.exports = (function () {
-  var _ = {};
-
-  _.extract3x3 = function (model, screen, oldpos) {
-    function getValue(offset) {
-      var
-        x = oldpos.col + offset.x,
-        y = oldpos.row + offset.y;
-
-      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
-        return ' ';
-
-      return screen.lines[y][x];
-    }
-
-    return [
-      [getValue({x: -1, y: -1}), getValue({x: 0, y: -1}), getValue({x: 1, y: -1})],
-      [getValue({x: -1, y:  0}), getValue({x: 0, y:  0}), getValue({x: 1, y:  0})],
-      [getValue({x: -1, y:  1}), getValue({x: 0, y:  1}), getValue({x: 1, y:  1})]
-    ];
-  };
-
-  _.apply3x3 = function (model, matrix, screen, oldpos) {
-    function setValue(offset, value) {
-      var
-        x = oldpos.col + offset.x,
-        y = oldpos.row + offset.y;
-
-      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
-        return;
-
-      screen.lines[y][x] = value;
-    }
-
-    for(var x = 0; x < 3; x++) {
-      for(var y = 0; y < 3; y++) {
-        setValue({x: x-1, y: y-1}, matrix[y][x]);
-      }
-    }
-  };
-
-  return _;
-})();
-
-},{}],8:[function(require,module,exports){
+},{"./brushes.js":3,"./mixins.js":7,"./matrix3x3.js":8}],7:[function(require,module,exports){
 module = module.exports = (function () {
   var _ = {};
 
@@ -655,6 +626,51 @@ module = module.exports = (function () {
         right: true,
         bottom: true
       };
+    }
+  };
+
+  return _;
+})();
+
+},{}],8:[function(require,module,exports){
+module = module.exports = (function () {
+  var _ = {};
+
+  _.extract3x3 = function (model, screen, oldpos) {
+    function getValue(offset) {
+      var
+        x = oldpos.col + offset.x,
+        y = oldpos.row + offset.y;
+
+      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
+        return ' ';
+
+      return screen.lines[y][x];
+    }
+
+    return [
+      [getValue({x: -1, y: -1}), getValue({x: 0, y: -1}), getValue({x: 1, y: -1})],
+      [getValue({x: -1, y:  0}), getValue({x: 0, y:  0}), getValue({x: 1, y:  0})],
+      [getValue({x: -1, y:  1}), getValue({x: 0, y:  1}), getValue({x: 1, y:  1})]
+    ];
+  };
+
+  _.apply3x3 = function (model, matrix, screen, oldpos) {
+    function setValue(offset, value) {
+      var
+        x = oldpos.col + offset.x,
+        y = oldpos.row + offset.y;
+
+      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
+        return;
+
+      screen.lines[y][x] = value;
+    }
+
+    for(var x = 0; x < 3; x++) {
+      for(var y = 0; y < 3; y++) {
+        setValue({x: x-1, y: y-1}, matrix[y][x]);
+      }
     }
   };
 
