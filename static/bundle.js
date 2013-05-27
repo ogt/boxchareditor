@@ -283,16 +283,10 @@ function updateGrid(model,s,oldpos, newpos, brush) {
 
 },{"./brushes.js":3}],6:[function(require,module,exports){
 /**
- * Created with JetBrains WebStorm.
- * User: http://github.com/GulinSS
- * Date: 25.03.13
- * Time: 2:22
- * Solution for http://github.com/ogt/boxchareditor/issues/2
+ * Solution for http://github.com/ogt/boxchareditor/issues/3
  */
 
-/* │ ─ ┼ */
-
-/* ┤ ┐ └ ┴ ┬ ├ ┘ ┌ */
+// ═ ║ ╒ ╓ ╔ ╕ ╖ ╗ ╘ ╙ ╚ ╛ ╜ ╝ ╞ ╟ ╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ ╨ ╩ ╪ ╫ ╬
 
 module = module.exports =  updateGrid;
 
@@ -323,179 +317,6 @@ function updateGrid(model, s, oldpos, newpos, brush) {
         var connectorsNext = matrixConnectors.linkInfo(matrix[side]());
         connectorsNext[aside] = matrixConnectors.linkInfo(matrix.center())[side];
         matrix[side](matrixConnectors.link(connectorsNext));
-      }
-
-      var linkCurrent = matrixConnectors.linkInfo(matrix.center());
-      var connectorsCurrent = matrixConnectors.all(linkCurrent);
-
-      if (Object.keys(connectorsCurrent).length === 0) {
-        matrix.center(line);
-      } else {
-        connectorsCurrent[side] = true;
-        matrix.center(matrixConnectors.link(connectorsCurrent));
-      }
-
-      postLinking();
-    }
-
-    var matrix = matrix3x3.extract3x3(model, screen, oldpos);
-    var matrixExt = mixins.apply(mixins.Matrix, matrix);
-    var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
-    var line = changes.axis === axisEnum.X ? '─' : '│';
-    var link = {
-      from: null,
-      to: null
-    };
-
-    if (changes.axis === axisEnum.X)
-      if (changes.direction === directionEnum.POSITIVE) {
-        link.to = 'right';
-        link.from = 'left';
-      }
-      else {
-        link.to = 'left';
-        link.from = 'right';
-      }
-    else
-    if (changes.direction === directionEnum.POSITIVE) {
-      link.to = 'bottom';
-      link.from = 'top';
-    }
-    else {
-      link.to = 'top';
-      link.from = 'bottom';
-    }
-
-    updateLinks(matrixExt, matrixConnectorsExt, line, link.to, link.from);
-
-    matrix3x3.apply3x3(model, matrix, screen, oldpos);
-  }
-
-  function eraseLine(screen, oldpos) {
-    function eraseLink(matrix, matrixConnectors) {
-      function removeTail(side, aside) {
-        var connectors = matrixConnectors.linkInfo(matrix[aside]());
-        delete connectors[side];
-        matrix[aside](matrixConnectors.link(connectors));
-      }
-
-      matrixExt.center(' ');
-
-      removeTail('bottom', 'top');
-      removeTail('top', 'bottom');
-      removeTail('left', 'right');
-      removeTail('right', 'left');
-    }
-
-    var matrix = matrix3x3.extract3x3(model, screen, oldpos);
-    var matrixExt = mixins.apply(mixins.Matrix, matrix);
-    var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
-
-    eraseLink(matrixExt, matrixConnectorsExt);
-
-    matrix3x3.apply3x3(model, matrix, screen, oldpos);
-  }
-
-  function clearLook(screen) {
-    var matrix = matrix3x3.extract3x3(model, screen, screen.cursor);
-    var matrixExt = mixins.apply(mixins.Matrix, matrix);
-    var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
-
-    // TODO: for delete like classic algo
-    // if (matrixExt.center() === ' ') return;
-
-    var connectors = matrixConnectorsExt.all();
-    if (matrixExt.top() === ' ')
-      delete connectors.top;
-
-    if (matrixExt.bottom() === ' ')
-      delete connectors.bottom;
-
-    if (matrixExt.left() === ' ')
-      delete connectors.left;
-
-    if (matrixExt.right() === ' ')
-      delete connectors.right;
-
-    matrixExt.center(matrixConnectorsExt.link(connectors));
-
-    matrix3x3.apply3x3(model, matrix, screen, screen.cursor);
-  }
-
-  var changes = {
-    isErase: false,
-    direction: null,
-    axis: null
-  };
-
-  if (brush == brushes.BRUSHERASE)
-    changes.isErase = true;
-  if (oldpos.col != newpos.col) {
-    changes.axis = axisEnum.X;
-
-    if (newpos.col - oldpos.col > 0)
-      changes.direction = directionEnum.POSITIVE;
-    else changes.direction = directionEnum.NEGATIVE;
-  }
-  else {
-    changes.axis = axisEnum.Y;
-
-    if (newpos.row - oldpos.row > 0)
-      changes.direction = directionEnum.POSITIVE;
-    else changes.direction = directionEnum.NEGATIVE;
-  }
-
-  if (changes.isErase) {
-    eraseLine(s, oldpos);
-  } else
-    drawLine(s, oldpos, changes);
-
-  clearLook(s);
-}
-
-},{"./brushes.js":3,"./mixins.js":8,"./matrix3x3.js":9}],7:[function(require,module,exports){
-/**
- * Solution for http://github.com/ogt/boxchareditor/issues/3
- * Solution for http://github.com/ogt/boxchareditor/issues/4
- */
-
-// ═ ║ ╒ ╓ ╔ ╕ ╖ ╗ ╘ ╙ ╚ ╛ ╜ ╝ ╞ ╟ ╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ ╨ ╩ ╪ ╫ ╬
-// ┠ ┡ ┢ ┣ ┤ ┥ ┦ ┧ ┨ ┩ ┪ ┫ ┬ ┭ ┮ ┯ ┰ ┱ ┲ ┳ ┴ ┵ ┶ ┷ ┸ ┹ ┺ ┻ ┼ ┽ ┾ ┿ ╀ ╁ ╂ ╃ ╄ ╅ ╆ ╇ ╈ ╉ ╊ ╋
-
-module = module.exports =  updateGrid;
-
-var brushes = require('./brushes.js');
-var mixins = require('./mixinsorg.js');
-var matrix3x3 = require('./matrix3x3.js');
-
-var directionEnum = {
-  POSITIVE: 1,
-  NEGATIVE: 0
-};
-
-var axisEnum = {
-  X: 1,
-  Y: 0
-};
-
-function updateGrid(model, s, oldpos, newpos, brush) {
-
-  function drawLine(screen, oldpos, changes) {
-
-    function updateLinks(matrix, matrixConnectors, line, side, aside) {
-      function postLinking() {
-        //TODO: kill doubles
-
-        if (matrix[side]() === ' ') return;
-
-        console.log(matrix)
-        console.log(matrix[side]())
-        var connectorsNext = matrixConnectors.linkInfo(matrix[side]());
-        console.log('connectorsNext',connectorsNext)
-        console.log('matrix.center()',matrix.center())
-        connectorsNext[aside] = matrixConnectors.linkInfo(matrix.center())[side];
-        console.log('connectorsNext[aside]', connectorsNext[aside])
-        matrix[side](matrixConnectors.link(connectorsNext));
 
       }
 
@@ -509,7 +330,6 @@ function updateGrid(model, s, oldpos, newpos, brush) {
       if (Object.keys(connectorsCurrent).length === 0) {
         matrix.center(line);
       } else {
-        //connectorsCurrent[side] = true;
         connectorsCurrent[side] = changes.brushType;
         matrix.center(matrixConnectors.link(connectorsCurrent));
       }
@@ -524,9 +344,6 @@ function updateGrid(model, s, oldpos, newpos, brush) {
     var line = '';
     if (changes.brushType == 'single') {
       line = changes.axis === axisEnum.X ? '─' : '│';
-    }
-    if (changes.brushType == 'thick'){
-      line = changes.axis === axisEnum.X ? '━' : '┃';
     }
     if (changes.brushType == 'double') {
       line = changes.axis === axisEnum.X ? '═' : '║';
@@ -596,7 +413,7 @@ function updateGrid(model, s, oldpos, newpos, brush) {
     // TODO: for delete like classic algo
     // if (matrixExt.center() === ' ') return;
 
-    var connectors = {}
+    var connectors = {};
 
     connectors = matrixConnectorsExt.all();
 
@@ -631,12 +448,203 @@ function updateGrid(model, s, oldpos, newpos, brush) {
     changes.brushType = 'single';
     changes.isErase = false;
   }
-  if (brush == brushes.BRUSHTHICK){
-    changes.brushType = 'thick';
-    changes.isErase = false;
-  }
   if (brush == brushes.BRUSHDOUBLE) {
     changes.brushType = 'double';
+    changes.isErase = false;
+  }
+
+  if (oldpos.col != newpos.col) {
+    changes.axis = axisEnum.X;
+
+    if (newpos.col - oldpos.col > 0)
+      changes.direction = directionEnum.POSITIVE;
+    else changes.direction = directionEnum.NEGATIVE;
+  }
+  else {
+    changes.axis = axisEnum.Y;
+
+    if (newpos.row - oldpos.row > 0)
+      changes.direction = directionEnum.POSITIVE;
+    else changes.direction = directionEnum.NEGATIVE;
+  }
+
+  if (changes.isErase) {
+    eraseLine(s, oldpos);
+  } else
+    drawLine(s, oldpos, changes);
+
+  clearLook(s);
+}
+},{"./brushes.js":3,"./mixins.js":8,"./matrix3x3.js":9}],7:[function(require,module,exports){
+/**
+ * Solution for http://github.com/ogt/boxchareditor/issues/4
+ */
+
+// ─ ━ │┃ ┌ ┍ ┎ ┏ ┐ ┑ ┒ ┓ └ ┕ ┖ ┗ ┘ ┙ ┚ ┛ ├ ┝ ┞ ┟ ┠ ┡ ┢ ┣ ┤ ┥ ┦ ┧ ┨ ┩ ┪ ┫ ┬ ┭ ┮ ┯ ┰ ┱ ┲ ┳ ┴ ┵ ┶ ┷ ┸ ┹ ┺ ┻ ┼ ┽ ┾ ┿ ╀ ╁ ╂ ╃ ╄ ╅ ╆ ╇ ╈ ╉ ╊ ╋
+
+module = module.exports =  updateGrid;
+
+var brushes = require('./brushes.js');
+var mixins = require('./mixinsorg.js');
+var matrix3x3 = require('./matrix3x3.js');
+
+var directionEnum = {
+  POSITIVE: 1,
+  NEGATIVE: 0
+};
+
+var axisEnum = {
+  X: 1,
+  Y: 0
+};
+
+function updateGrid(model, s, oldpos, newpos, brush) {
+
+  function drawLine(screen, oldpos, changes) {
+
+    function updateLinks(matrix, matrixConnectors, line, side, aside) {
+      function postLinking() {
+        //TODO: kill doubles
+
+        if (matrix[side]() === ' ') return;
+
+        var connectorsNext = matrixConnectors.linkInfo(matrix[side]());
+        connectorsNext[aside] = matrixConnectors.linkInfo(matrix.center())[side];
+        matrix[side](matrixConnectors.link(connectorsNext));
+
+      }
+
+      var linkCurrent = matrixConnectors.linkInfo(matrix.center());
+
+      var connectorsCurrent = {};
+
+      connectorsCurrent = matrixConnectors.all(linkCurrent);
+
+
+      if (Object.keys(connectorsCurrent).length === 0) {
+        matrix.center(line);
+      } else {
+        connectorsCurrent[side] = changes.brushType;
+        matrix.center(matrixConnectors.link(connectorsCurrent));
+      }
+
+      postLinking();
+    }
+
+    var matrix = matrix3x3.extract3x3(model, screen, oldpos);
+    var matrixExt = mixins.apply(mixins.Matrix, matrix);
+    var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
+
+    var line = '';
+    if (changes.brushType == 'single') {
+      line = changes.axis === axisEnum.X ? '─' : '│';
+    }
+    if (changes.brushType == 'thick'){
+      line = changes.axis === axisEnum.X ? '━' : '┃';
+    }
+
+
+    var link = {
+      from: null,
+      to: null
+    };
+
+    if (changes.axis === axisEnum.X)
+      if (changes.direction === directionEnum.POSITIVE) {
+        link.to = 'right';
+        link.from = 'left';
+      }
+      else {
+        link.to = 'left';
+        link.from = 'right';
+      }
+    else
+    if (changes.direction === directionEnum.POSITIVE) {
+      link.to = 'bottom';
+      link.from = 'top';
+    }
+    else {
+      link.to = 'top';
+      link.from = 'bottom';
+    }
+
+
+    updateLinks(matrixExt, matrixConnectorsExt, line, link.to, link.from);
+
+    matrix3x3.apply3x3(model, matrix, screen, oldpos);
+  }
+
+  function eraseLine(screen, oldpos) {
+    function eraseLink(matrix, matrixConnectors) {
+      function removeTail(side, aside) {
+        var connectors = matrixConnectors.linkInfo(matrix[aside]());
+        delete connectors[side];
+        matrix[aside](matrixConnectors.link(connectors));
+      }
+
+      matrixExt.center(' ');
+
+      removeTail('bottom', 'top');
+      removeTail('top', 'bottom');
+      removeTail('left', 'right');
+      removeTail('right', 'left');
+    }
+
+    var matrix = matrix3x3.extract3x3(model, screen, oldpos);
+    var matrixExt = mixins.apply(mixins.Matrix, matrix);
+    var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
+
+    eraseLink(matrixExt, matrixConnectorsExt);
+
+    matrix3x3.apply3x3(model, matrix, screen, oldpos);
+  }
+
+  function clearLook(screen) {
+    var matrix = matrix3x3.extract3x3(model, screen, screen.cursor);
+    var matrixExt = mixins.apply(mixins.Matrix, matrix);
+    var matrixConnectorsExt = mixins.apply(mixins.MatrixConnectors, matrixExt);
+
+    // TODO: for delete like classic algo
+    // if (matrixExt.center() === ' ') return;
+
+    var connectors = {};
+
+    connectors = matrixConnectorsExt.all();
+
+    if (matrixExt.top() === ' ')
+      delete connectors.top;
+
+    if (matrixExt.bottom() === ' ')
+      delete connectors.bottom;
+
+    if (matrixExt.left() === ' ')
+      delete connectors.left;
+
+    if (matrixExt.right() === ' ')
+      delete connectors.right;
+
+    matrixExt.center(matrixConnectorsExt.link(connectors));
+
+    matrix3x3.apply3x3(model, matrix, screen, screen.cursor);
+  }
+
+  var changes = {
+    isErase: false,
+    brushType: brushes.NOBRUSH,
+    direction: null,
+    axis: null
+  };
+
+  if (brush == brushes.BRUSHERASE)
+    changes.isErase = true;
+  
+  if (brush == brushes.BRUSHSINGLE) {
+    changes.brushType = 'single';
+    changes.isErase = false;
+  }
+  // if (brush == brushes.BRUSHTHICK){
+  if (brush == brushes.BRUSHDOUBLE){
+    changes.brushType = 'thick';
     changes.isErase = false;
   }
 
@@ -719,249 +727,6 @@ module = module.exports = (function () {
     all: function(current) {
       current = current || {};
 
-      if ('┼│┤├┌┬┐'.indexOf(this.top()) != -1) {
-        current.top = true;
-      }
-
-      if ('┼│┤├└┴┘'.indexOf(this.bottom()) != -1) {
-        current.bottom = true;
-      }
-
-      if ('┼─┴┬┤┐┘'.indexOf(this.right()) != -1) {
-        current.right = true;
-      }
-
-      if ('┼─┴┬├┌└'.indexOf(this.left()) != -1) {
-        current.left = true;
-      }
-
-      return current;
-    },
-    link: function(connectors) {
-      if (Object.keys(connectors).length === 4) return '┼';
-
-      if (Object.keys(connectors).length === 2) {
-        if (connectors.top) {
-          if (connectors.right) return '└';
-          if (connectors.bottom) return '│';
-          if (connectors.left) return '┘';
-        }
-
-        if (connectors.right) {
-          if (connectors.bottom) return '┌';
-          if (connectors.left) return '─';
-        }
-
-        if (connectors.bottom) {
-          if (connectors.left) return '┐';
-        }
-      }
-
-      if (Object.keys(connectors).length === 3) {
-        if (connectors.top) {
-          if (connectors.right) {
-            if (connectors.bottom) return "├";
-            if (connectors.left) return "┴";
-          }
-
-          if (connectors.bottom) {
-            if (connectors.left) return "┤";
-          }
-        }
-
-        if (connectors.right) {
-          if (connectors.bottom) {
-            if (connectors.left) return "┬";
-          }
-        }
-      }
-    },
-    linkInfo: function(line) {
-      if (line === ' ') return {};
-
-      if (line === '│') return {
-        top: true,
-        bottom: true
-      };
-
-      if (line === '─') return {
-        left: true,
-        right: true
-      };
-
-      if (line === '┼') return {
-        top: true,
-        left: true,
-        right: true,
-        bottom: true
-      };
-
-      if (line === '┤') return {
-        top: true,
-        left: true,
-        bottom: true
-      };
-
-      if (line === '┐') return {
-        bottom: true,
-        left: true
-      };
-
-      if (line === '└') return {
-        top: true,
-        right: true
-      };
-
-      if (line === '┴') return {
-        top: true,
-        right: true,
-        left: true
-      };
-
-      if (line === '┬') return {
-        left: true,
-        right: true,
-        bottom: true
-      };
-
-      if (line === '├') return {
-        right: true,
-        top: true,
-        bottom: true
-      };
-
-      if (line === '┘') return {
-        top: true,
-        left: true
-      };
-
-      if (line === '┌') return {
-        right: true,
-        bottom: true
-      };
-    }
-  };
-
-  return _;
-})();
-
-},{}],9:[function(require,module,exports){
-module = module.exports = (function () {
-  var _ = {};
-
-  _.extract3x3 = function (model, screen, oldpos) {
-    function getValue(offset) {
-      var
-        x = oldpos.col + offset.x,
-        y = oldpos.row + offset.y;
-
-      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
-        return ' ';
-
-      return screen.lines[y][x];
-    }
-
-    return [
-      [getValue({x: -1, y: -1}), getValue({x: 0, y: -1}), getValue({x: 1, y: -1})],
-      [getValue({x: -1, y:  0}), getValue({x: 0, y:  0}), getValue({x: 1, y:  0})],
-      [getValue({x: -1, y:  1}), getValue({x: 0, y:  1}), getValue({x: 1, y:  1})]
-    ];
-  };
-
-  _.apply3x3 = function (model, matrix, screen, oldpos) {
-    function setValue(offset, value) {
-      var
-        x = oldpos.col + offset.x,
-        y = oldpos.row + offset.y;
-
-      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
-        return;
-
-      screen.lines[y][x] = value;
-    }
-
-    for(var x = 0; x < 3; x++) {
-      for(var y = 0; y < 3; y++) {
-        setValue({x: x-1, y: y-1}, matrix[y][x]);
-      }
-    }
-  };
-
-  return _;
-})();
-
-},{}],10:[function(require,module,exports){
-module = module.exports = (function () {
-  var _ = {};
-
-  _.apply = function (obj, target) {
-    var result = {};
-
-    var fn = function(key) {
-      return function() {
-        return obj[key].apply(target, arguments);
-      };
-    };
-
-    for (var key in obj) {
-      result[key] = fn(key);
-    }
-    return result;
-  };
-
-  _.Matrix = {
-    top: function(replace) {
-      if (replace !== undefined)
-        this[0][1] = replace;
-
-      return this[0][1];
-    },
-    bottom: function(replace) {
-      if (replace !== undefined)
-        this[2][1] = replace;
-
-      return this[2][1];
-    },
-    left: function(replace) {
-      if (replace !== undefined)
-        this[1][0] = replace;
-
-      return this[1][0];
-    },
-    right: function(replace) {
-      if (replace !== undefined)
-        this[1][2] = replace;
-
-      return this[1][2];
-    },
-    center: function(replace) {
-      if (replace !== undefined)
-        this[1][1] = replace;
-
-      return this[1][1];
-    }
-  };
-
-  _.MatrixConnectors = {
-    all: function(current) {
-      current = current || {};
-
-      if ('╋┃┫┣┏┳┓'.indexOf(this.top()) != -1) {
-        current.top = 'thick';
-      }
-
-      if ('╋┃┫┣┗┻┛'.indexOf(this.bottom()) != -1) {
-        current.bottom = 'thick';
-      }
-
-      if ('╋━┻┳┫┓┛'.indexOf(this.right()) != -1) {
-        current.right = 'thick';
-      }
-
-      if ('╋━┻┳┣┏┗'.indexOf(this.left()) != -1) {
-        current.left = 'thick';
-      }
-
       if ('╬║╣╠╔╦╗'.indexOf(this.top()) != -1) {
         current.top = 'double';
       }
@@ -1000,23 +765,9 @@ module = module.exports = (function () {
       if (Object.keys(connectors).length === 4) {
         if (connectors.top === 'single') {
           if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'single') return '┼';
-          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'single') return '┾';
-          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'thick') return '╁';
-          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'single') return '┽';
-          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'single') return '┿';
-          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╈';
-          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'thick') return '╅';
-          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╆';
+
           if (connectors.left === 'double' && connectors.right === 'double' && connectors.bottom === 'single') return '╪';
-        } else if (connectors.top === 'thick') {
-          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╋';
-          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'single') return '╀';
-          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'single') return '╄';
-          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'thick') return '╂';
-          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'single') return '╃';
-          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'single') return '╇';
-          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'thick') return '╉';
-          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╊';
+
         } else if (connectors.top === 'double') {
           if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'double') return '╫';
           if (connectors.left === 'double' && connectors.right === 'double' && connectors.bottom === 'double') return '╬';
@@ -1024,62 +775,48 @@ module = module.exports = (function () {
 
         if (connectors.right === 'single') {
           if (connectors.left === 'single' && connectors.top === 'single' && connectors.bottom === 'single') return '┼';
-          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.bottom === 'single') return '┽';
-          if (connectors.left === 'single' && connectors.top === 'single' && connectors.bottom === 'thick') return '╁';
-          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.bottom === 'thick') return '╅';
-          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'single') return '╀';
-          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'thick') return '╂';
-          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'single') return '╃';
-        } else if (connectors.right === 'thick') {
-          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.bottom === 'thick') return '╆';
-          if (connectors.left === 'thick' && connectors.top === 'thick' && connectors.bottom === 'thick') return '╈';
-          if (connectors.left === 'thick' && connectors.top === 'thick' && connectors.bottom === 'single') return '┿';
-          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.bottom === 'single') return '┾';
-          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'single') return '╄';
-          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'single') return '╇';
-          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'thick') return '╉';
-          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╊';
-          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╋';
+
+          if (connectors.left === 'single' && connectors.top === 'double' && connectors.bottom === 'double') return '╫';
+
         } else if (connectors.right === 'double') {
           if (connectors.left === 'double' && connectors.top === 'double' && connectors.bottom === 'single') return '╪';
-          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'double') return '╫';
           if (connectors.left === 'double' && connectors.right === 'double' && connectors.bottom === 'double') return '╬';
+        }
+
+        if (connectors.left === 'single') {
+          if (connectors.right === 'single' && connectors.top === 'single' && connectors.bottom === 'single') return '┼';
+
+          if (connectors.right === 'single' && connectors.top === 'double' && connectors.bottom === 'double') return '╫';
+
+        } else if (connectors.left === 'double') {
+          if (connectors.right === 'double' && connectors.top === 'single' && connectors.bottom === 'single') return '╪';
+          if (connectors.right === 'double' && connectors.top === 'double' && connectors.bottom === 'double') return '╬';
+        }
+
+        if (connectors.bottom === 'single') {
+          if (connectors.left === 'single' && connectors.top === 'single' && connectors.right === 'single') return '┼';
+
+          if (connectors.left === 'double' && connectors.top === 'single' && connectors.right === 'double') return '╪';
+
+        } else if (connectors.bottom === 'double') {
+          if (connectors.left === 'single' && connectors.top === 'double' && connectors.right === 'single') return '╫';
+          if (connectors.left === 'double' && connectors.top === 'double' && connectors.right === 'double') return '╬';
         }
 
       }
 
-// ╞ ╟ ╠ ╡ ╢ ╣ ╤ ╥ ╦ ╧ ╨ ╩ ╪ ╫ ╬  ┠ ┡ ┢ ┣ ┤ ┥ ┦ ┧ ┨ ┩ ┪ ┫ ┬ ┭ ┮ ┯ ┰ ┱ ┲ ┳ ┴ ┵ ┶ ┷ ┸ ┹ ┺ ┻ ┼ ┽ ┾ ┿ ╀ ╁ ╂ ╃ ╄ ╅ ╆ ╇ ╈ ╉ ╊ ╋
-
       if (Object.keys(connectors).length === 3) {
         if (connectors.top === 'single') {
           if (connectors.left === 'single' && connectors.bottom === 'single') return '┤';
-          if (connectors.left === 'thick' && connectors.bottom === 'thick') return '┪';            
-          if (connectors.left === 'double' && connectors.bottom === 'single') return '╡';            
-          if (connectors.left === 'thick' && connectors.bottom === 'single') return '┥';            
-          if (connectors.left === 'single' && connectors.bottom === 'thick') return '┧';
-          if (connectors.right === 'double' && connectors.bottom === 'single') return '╞';
-          if (connectors.right === 'thick' && connectors.bottom === 'thick') return '┢';
+
           if (connectors.right === 'single' && connectors.bottom === 'single') return '├';
-          if (connectors.right === 'thick' && connectors.bottom === 'single') return '┝';
-          if (connectors.right === 'single' && connectors.bottom === 'thick') return '┟';
-          if (connectors.right === 'double' && connectors.left === 'double') return '╧';
+
           if (connectors.right === 'single' && connectors.left === 'single') return '┴';
-          if (connectors.right === 'single' && connectors.left === 'thick') return '┵';
-          if (connectors.right === 'thick' && connectors.left === 'single') return '┶';
-          if (connectors.right === 'thick' && connectors.left === 'thick') return '┷';
-        } else if (connectors.top === 'thick') {
-          if (connectors.left === 'single' && connectors.bottom === 'thick') return '┨';
-          if (connectors.left === 'thick' && connectors.bottom === 'single') return '┩';
-          if (connectors.left === 'thick' && connectors.bottom === 'thick') return '┫';
-          if (connectors.left === 'single' && connectors.bottom === 'single') return '┦';
-          if (connectors.right === 'single' && connectors.bottom === 'thick') return '┠';
-          if (connectors.right === 'thick' && connectors.bottom === 'single') return '┡';
-          if (connectors.right === 'thick' && connectors.bottom === 'thick') return '┣';
-          if (connectors.right === 'single' && connectors.bottom === 'single') return '┞';
-          if (connectors.right === 'single' && connectors.left === 'single') return '┸';
-          if (connectors.right === 'single' && connectors.left === 'thick') return '┹';
-          if (connectors.right === 'thick' && connectors.left === 'single') return '┺';
-          if (connectors.right === 'thick' && connectors.left === 'thick') return '┻';
+
+          if (connectors.right === 'double' && connectors.left === 'double') return '╧';
+          if (connectors.right === 'double' && connectors.bottom === 'single') return '╞';
+          if (connectors.left === 'double' && connectors.bottom === 'single') return '╡';  
+
         } else if (connectors.top === 'double') {
           if (connectors.left === 'double' && connectors.bottom === 'double') return '╣';
           if (connectors.left === 'single' && connectors.bottom === 'double') return '╢';
@@ -1090,46 +827,72 @@ module = module.exports = (function () {
         }
 
         if (connectors.bottom === 'single') {
+          if (connectors.left === 'single' && connectors.right === 'single') return '┬';
+
           if (connectors.left === 'double' && connectors.right === 'double') return '╤';
-          if (connectors.left === 'single' && connectors.right === 'single') return '┬';            
-          if (connectors.left === 'thick' && connectors.right === 'single') return '┭';            
-          if (connectors.left === 'single' && connectors.right === 'thick') return '┮';            
-          if (connectors.left === 'thick' && connectors.right === 'thick') return '┯';
-        } else if (connectors.bottom === 'thick') {
-          if (connectors.left === 'single' && connectors.right === 'single') return '┰';
-          if (connectors.left === 'thick' && connectors.right === 'single') return '┱';
-          if (connectors.left === 'single' && connectors.right === 'thick') return '┲';
-          if (connectors.left === 'thick' && connectors.right === 'thick') return '┳';
+
+          if (connectors.left === 'single' && connectors.top === 'single') return '┤';
+
+          if (connectors.left === 'double' && connectors.top === 'single') return '╡';
+
+          if (connectors.right === 'single' && connectors.top === 'single') return '├';
+
+          if (connectors.right === 'double' && connectors.top === 'single') return '╞';
+
         } else if (connectors.bottom === 'double') {
           if (connectors.left === 'single' && connectors.right === 'single') return '╥';
           if (connectors.left === 'double' && connectors.right === 'double') return '╦';
+          if (connectors.left === 'double' && connectors.top === 'double') return '╣';
+          if (connectors.left === 'single' && connectors.top === 'double') return '╢';
+          if (connectors.right === 'single' && connectors.top === 'double') return '╟';
+          if (connectors.right === 'double' && connectors.top === 'double') return '╠';
         }
 
         if (connectors.left === 'single') {
+
+          if (connectors.top === 'single' && connectors.bottom === 'single') return '┤';
+
+          if (connectors.bottom === 'double' && connectors.top === 'double') return '╢';
+
           if (connectors.top === 'single' && connectors.right === 'single') return '┴';
-          if (connectors.top === 'single' && connectors.right === 'single') return '┶';
-        } else if (connectors.left === 'thick') {
-          if (connectors.top === 'single' && connectors.right === 'single') return '┰';
-          if (connectors.top === 'thick' && connectors.right === 'single') return '┱';
-          if (connectors.top === 'single' && connectors.right === 'thick') return '┲';
-          if (connectors.top === 'thick' && connectors.right === 'thick') return '┳';
+
+          if (connectors.right === 'single' && connectors.top === 'double') return '╨';
+
+          if (connectors.bottom === 'single' && connectors.right === 'single') return '┬';
+
+          if (connectors.bottom === 'double' && connectors.right === 'single') return '╥';
+
         } else if (connectors.left === 'double') {
-          if (connectors.top === 'single' && connectors.right === 'single') return '╥';
-          if (connectors.top === 'double' && connectors.right === 'double') return '╦';
+          if (connectors.top === 'single' && connectors.bottom === 'single') return '╡';
+          if (connectors.top === 'single' && connectors.right === 'double') return '╧';
+          if (connectors.bottom === 'single' && connectors.right === 'double') return '╤';
+          if (connectors.top === 'double' && connectors.bottom === 'double') return '╣';
+          if (connectors.top === 'double' && connectors.right === 'double') return '╩';
+          if (connectors.bottom === 'double' && connectors.right === 'double') return '╦';
+
         }
 
         if (connectors.right === 'single') {
-          if (connectors.top === 'single' && connectors.right === 'single') return '┴';
-          if (connectors.top === 'single' && connectors.right === 'single') return '┶';
-        } else if (connectors.right === 'thick') {
-          if (connectors.top === 'thick' && connectors.bottom === 'thick') return '┣';
-          if (connectors.left === 'single' && connectors.bottom === 'single') return '┰';
-          if (connectors.left === 'thick' && connectors.bottom === 'single') return '┱';
-          if (connectors.left === 'single' && connectors.bottom === 'thick') return '┲';
-          if (connectors.left === 'thick' && connectors.bottom === 'thick') return '┳';
+          if (connectors.bottom === 'single' && connectors.top === 'single') return '├';
+
+          if (connectors.bottom === 'double' && connectors.top === 'double') return '╟';
+
+          if (connectors.bottom === 'single' && connectors.left === 'single') return '┬';
+
+          if (connectors.bottom === 'double' && connectors.left === 'single') return '╥';
+
+          if (connectors.left === 'single' && connectors.top === 'single') return '┴';
+
+          if (connectors.left === 'single' && connectors.top === 'double') return '╨';
+
         } else if (connectors.right === 'double') {
-          if (connectors.top === 'single' && connectors.right === 'single') return '╥';
-          if (connectors.top === 'double' && connectors.right === 'double') return '╦';
+          if (connectors.top === 'single' && connectors.left === 'double') return '╧';
+          if (connectors.bottom === 'double' && connectors.left === 'double') return '╦';
+          if (connectors.bottom === 'single' && connectors.left === 'double') return '╤';
+          if (connectors.top === 'double' && connectors.left === 'double') return '╩';
+          if (connectors.top === 'single' && connectors.bottom === 'single') return '╞';
+          if (connectors.top === 'double' && connectors.bottom === 'double') return '╠';
+
         }
 
       }
@@ -1137,137 +900,69 @@ module = module.exports = (function () {
       if (Object.keys(connectors).length === 2) {
         if (connectors.top === 'single') {
           if (connectors.right === 'single') return '└';
-          if (connectors.right === 'thick') return '┕';
-          if (connectors.right === 'double') return '╘';
           if (connectors.bottom === 'single') return '│';
-          if (connectors.bottom === 'thick') return '│'; // there is no suitable symbol
           if (connectors.bottom === 'double') return '│'; // there is no suitable symbol
           if (connectors.left === 'single') return '┘';
-          if (connectors.left === 'thick') return '┙';
+          if (connectors.right === 'double') return '╘';
           if (connectors.left === 'double') return '╛';
-
-        } else if (connectors.top === 'thick') {
-          if (connectors.right === 'single') return '┖';
-          if (connectors.right === 'thick') return '┗';
-          if (connectors.right === 'double') return '┗'; // there is no suitable symbol
-          if (connectors.bottom === 'single') return '┃'; // there is no suitable symbol
-          if (connectors.bottom === 'thick') return '┃';
-          if (connectors.bottom === 'double') return '┃'; // there is no suitable symbol
-          if (connectors.left === 'single') return '┚';
-          if (connectors.left === 'thick') return '┛';
-          if (connectors.left === 'double') return '┛'; // there is no suitable symbol
 
         } else if (connectors.top === 'double') {
           if (connectors.right === 'single') return '╙';
-          if (connectors.right === 'thick') return '╙'; // there is no suitable symbol
           if (connectors.right === 'double') return '╚';
           if (connectors.bottom === 'single') return '║'; // there is no suitable symbol
-          if (connectors.bottom === 'thick') return '║'; // there is no suitable symbol
           if (connectors.bottom === 'double') return '║';
           if (connectors.left === 'single') return '╜';
-          if (connectors.left === 'thick') return '╝'; // there is no suitable symbol
           if (connectors.left === 'double') return '╝';
         }
 
         if (connectors.right === 'single') {
           if (connectors.bottom === 'single') return '┌';
-          if (connectors.bottom === 'thick') return '┎';
-          if (connectors.bottom === 'double') return '╓';
           if (connectors.left === 'single') return '─';
-          if (connectors.left === 'thick') return '─'; // there is no suitable symbol
           if (connectors.left === 'double') return '─'; // there is no suitable symbol
           if (connectors.top === 'single') return '└';
-          if (connectors.top === 'thick') return '┖';
+          if (connectors.bottom === 'double') return '╓';
           if (connectors.top === 'double') return '╙';
-      
-        } else if (connectors.right === 'thick'){
-          if (connectors.bottom === 'single') return '┍';
-          if (connectors.bottom === 'thick') return '┏';
-          if (connectors.bottom === 'double') return '┏'; // there is no suitable symbol
-          if (connectors.left === 'single') return '━'; // there is no suitable symbol
-          if (connectors.left === 'thick') return '━';
-          if (connectors.left === 'double') return '━'; // there is no suitable symbol
-          if (connectors.top === 'single') return '┕';
-          if (connectors.top === 'thick') return '┗';
-          if (connectors.top === 'double') return '┗'; // there is no suitable symbol
-        
+    
         } else if (connectors.right === 'double'){
           if (connectors.bottom === 'single') return '╒';
-          if (connectors.bottom === 'thick') return '╔'; // there is no suitable symbol
           if (connectors.bottom === 'double') return '╔';
           if (connectors.left === 'single') return '═'; // there is no suitable symbol
-          if (connectors.left === 'thick') return '═'; // there is no suitable symbol
           if (connectors.left === 'double') return '═';
           if (connectors.top === 'single') return '╘';
-          if (connectors.top === 'thick') return '╚'; // there is no suitable symbol
           if (connectors.top === 'double') return '╚';
         }
    
         if (connectors.bottom === 'single') {
           if (connectors.left === 'single') return '┐';
-          if (connectors.left === 'thick') return '┑';
-          if (connectors.left === 'double') return '╕';
           if (connectors.right === 'single') return '┌';
-          if (connectors.right === 'thick') return '┍';
-          if (connectors.right === 'double') return '╒';
           if (connectors.top === 'single') return '│';
-          if (connectors.top === 'thick') return '│'; // there is no suitable symbol
           if (connectors.top === 'double') return '│'; // there is no suitable symbol
-        
-        } else if (connectors.bottom === 'thick') {
-          if (connectors.left === 'single') return '┒';
-          if (connectors.left === 'thick') return '┓';
-          if (connectors.left === 'double') return '┓'; // there is no suitable symbol
-          if (connectors.right === 'single') return '┎';
-          if (connectors.right === 'thick') return '┏';
-          if (connectors.right === 'double') return '┏'; // there is no suitable symbol
-          if (connectors.top === 'single') return '╘';
-          if (connectors.top === 'thick') return '╚';
-          if (connectors.top === 'double') return '╚';
-     
+          if (connectors.right === 'double') return '╒';
+          if (connectors.left === 'double') return '╕';
+
         } else if (connectors.bottom === 'double') {
           if (connectors.left === 'single') return '╖';
-          if (connectors.left === 'thick') return '╗'; // there is no suitable symbol
           if (connectors.left === 'double') return '╗';
           if (connectors.right === 'single') return '╓';
-          if (connectors.right === 'thick') return '╔'; // there is no suitable symbol
           if (connectors.right === 'double') return '╔';
           if (connectors.top === 'single') return '║'; // there is no suitable symbol
-          if (connectors.top === 'thick') return '║'; // there is no suitable symbol
           if (connectors.top === 'double') return '║';
         }
 
         if (connectors.left === 'single') {
           if (connectors.bottom === 'single') return '┐';
-          if (connectors.bottom === 'thick') return '┒';
-          if (connectors.bottom === 'double') return '╖';
           if (connectors.right === 'single') return '─';
-          if (connectors.right === 'thick') return '─'; // there is no suitable symbol
           if (connectors.right === 'double') return '─'; // there is no suitable symbol
           if (connectors.top === 'single') return '┘';
-          if (connectors.top === 'thick') return '┚';
+          if (connectors.bottom === 'double') return '╖';
           if (connectors.top === 'double') return '╜';
-        
-        } else if (connectors.left === 'thick') {
-          if (connectors.bottom === 'single') return '┑';
-          if (connectors.bottom === 'thick') return '┓';
-          if (connectors.bottom === 'double') return '┓';
-          if (connectors.right === 'single') return '━'; // there is no suitable symbol
-          if (connectors.right === 'thick') return '━';
-          if (connectors.right === 'double') return '━'; // there is no suitable symbol
-          if (connectors.top === 'single') return '┙';
-          if (connectors.top === 'thick') return '┛';
-          if (connectors.top === 'double') return '┛'; // there is no suitable symbol
 
         } else if (connectors.left === 'double') {
           if (connectors.bottom === 'single') return '╕';
-          if (connectors.bottom === 'thick') return '╗'; // there is no suitable symbol
           if (connectors.bottom === 'double') return '╗';
           if (connectors.right === 'single') return '═'; // there is no suitable symbol
-          if (connectors.right === 'thick') return '═';  // there is no suitable symbol
           if (connectors.right === 'double') return '═';
           if (connectors.top === 'single') return '╛';
-          if (connectors.top === 'thick') return '╝'; // there is no suitable symbol
           if (connectors.top === 'double') return '╝';
         }
       }
@@ -1503,6 +1198,552 @@ module = module.exports = (function () {
         top: 'double',
         left: 'single'
       };
+      
+    }
+  };
+
+  return _;
+})();
+
+},{}],9:[function(require,module,exports){
+module = module.exports = (function () {
+  var _ = {};
+
+  _.extract3x3 = function (model, screen, oldpos) {
+    function getValue(offset) {
+      var
+        x = oldpos.col + offset.x,
+        y = oldpos.row + offset.y;
+
+      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
+        return ' ';
+
+      return screen.lines[y][x];
+    }
+
+    return [
+      [getValue({x: -1, y: -1}), getValue({x: 0, y: -1}), getValue({x: 1, y: -1})],
+      [getValue({x: -1, y:  0}), getValue({x: 0, y:  0}), getValue({x: 1, y:  0})],
+      [getValue({x: -1, y:  1}), getValue({x: 0, y:  1}), getValue({x: 1, y:  1})]
+    ];
+  };
+
+  _.apply3x3 = function (model, matrix, screen, oldpos) {
+    function setValue(offset, value) {
+      var
+        x = oldpos.col + offset.x,
+        y = oldpos.row + offset.y;
+
+      if (x < 0 || y < 0 || x >= model.gridCols || y >= model.gridRows)
+        return;
+
+      screen.lines[y][x] = value;
+    }
+
+    for(var x = 0; x < 3; x++) {
+      for(var y = 0; y < 3; y++) {
+        setValue({x: x-1, y: y-1}, matrix[y][x]);
+      }
+    }
+  };
+
+  return _;
+})();
+
+},{}],10:[function(require,module,exports){
+module = module.exports = (function () {
+  var _ = {};
+
+  _.apply = function (obj, target) {
+    var result = {};
+
+    var fn = function(key) {
+      return function() {
+        return obj[key].apply(target, arguments);
+      };
+    };
+
+    for (var key in obj) {
+      result[key] = fn(key);
+    }
+    return result;
+  };
+
+  _.Matrix = {
+    top: function(replace) {
+      if (replace !== undefined)
+        this[0][1] = replace;
+
+      return this[0][1];
+    },
+    bottom: function(replace) {
+      if (replace !== undefined)
+        this[2][1] = replace;
+
+      return this[2][1];
+    },
+    left: function(replace) {
+      if (replace !== undefined)
+        this[1][0] = replace;
+
+      return this[1][0];
+    },
+    right: function(replace) {
+      if (replace !== undefined)
+        this[1][2] = replace;
+
+      return this[1][2];
+    },
+    center: function(replace) {
+      if (replace !== undefined)
+        this[1][1] = replace;
+
+      return this[1][1];
+    }
+  };
+
+  _.MatrixConnectors = {
+    all: function(current) {
+      current = current || {};
+
+      if ('┎┒┟┠┢┧┨┪┰┱┲╁╂╅╆╈╉╊'.indexOf(this.top()) != -1) {
+        current.top = 'thick';
+      }
+
+      if ('┖┚┞┠┡┦┨┩┸┹┺╀╂╃╄╇╉╊'.indexOf(this.bottom()) != -1) {
+        current.bottom = 'thick';
+      }
+
+      if ('┍┕┝┡┢┮┯┲┶┷┺┾┿╄╆╇╈╊'.indexOf(this.right()) != -1) {
+        current.right = 'thick';
+      }
+
+      if ('┑┙┥┩┪┭┯┱┵┷┹┽┿╃╅╇╈╉'.indexOf(this.left()) != -1) {
+        current.left = 'thick';
+      }
+
+      if ('┍┑┝┞┡┥┦┩┭┮┯┽┾┿╀╃╄╇'.indexOf(this.top()) != -1) {
+        current.top = 'single';
+      }
+
+      if ('┕┙┝┟┢┥┧┪┵┶┷┽┾┿╁╅╆╈'.indexOf(this.bottom()) != -1) {
+        current.bottom = 'single';
+      }
+
+      if ('┎┖┞┟┠┭┰┱┵┸┹┽╀╁╂╃╅╉'.indexOf(this.right()) != -1) {
+        current.right = 'single';
+      }
+
+      if ('┒┚┦┧┨┮┰┲┶┸┺┾╀╁╂╄╆╊'.indexOf(this.left()) != -1) {
+        current.left = 'single';
+      }
+      
+      if ('╋┃┫┣┏┳┓'.indexOf(this.top()) != -1) {
+        current.top = 'thick';
+      }
+
+      if ('╋┃┫┣┗┻┛'.indexOf(this.bottom()) != -1) {
+        current.bottom = 'thick';
+      }
+
+      if ('╋━┻┳┫┓┛'.indexOf(this.right()) != -1) {
+        current.right = 'thick';
+      }
+
+      if ('╋━┻┳┣┏┗'.indexOf(this.left()) != -1) {
+        current.left = 'thick';
+      }
+
+      if ('┼│┤├┌┬┐'.indexOf(this.top()) != -1) {
+        current.top = 'single';
+      }
+
+      if ('┼│┤├└┴┘'.indexOf(this.bottom()) != -1) {
+        current.bottom = 'single';
+      }
+
+      if ('┼─┴┬┤┐┘'.indexOf(this.right()) != -1) {
+        current.right = 'single';
+      }
+
+      if ('┼─┴┬├┌└'.indexOf(this.left()) != -1) {
+        current.left = 'single';
+      }
+
+      return current;
+    },
+    link: function(connectors) {
+      if (Object.keys(connectors).length === 4) {
+        if (connectors.top === 'single') {
+          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'single') return '┼';
+          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'single') return '┾';
+          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'thick') return '╁';
+          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'single') return '┽';
+          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'single') return '┿';
+          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╈';
+          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'thick') return '╅';
+          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╆';
+
+        } else if (connectors.top === 'thick') {
+          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╋';
+          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'single') return '╀';
+          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'single') return '╄';
+          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'single') return '╃';
+          if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'thick') return '╂';
+          if (connectors.left === 'thick' && connectors.right === 'thick' && connectors.bottom === 'single') return '╇';
+          if (connectors.left === 'thick' && connectors.right === 'single' && connectors.bottom === 'thick') return '╉';
+          if (connectors.left === 'single' && connectors.right === 'thick' && connectors.bottom === 'thick') return '╊';
+
+        }
+
+        if (connectors.right === 'single') {
+          if (connectors.left === 'single' && connectors.top === 'single' && connectors.bottom === 'single') return '┼';
+          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.bottom === 'single') return '┽';
+          if (connectors.left === 'single' && connectors.top === 'single' && connectors.bottom === 'thick') return '╁';
+          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.bottom === 'thick') return '╅';
+          if (connectors.left === 'thick' && connectors.top === 'thick' && connectors.bottom === 'single') return '╃';
+          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.bottom === 'single') return '╀';
+          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.bottom === 'thick') return '╂';
+
+        } else if (connectors.right === 'thick') {
+          if (connectors.left === 'single' && connectors.top === 'single' && connectors.bottom === 'thick') return '╆';
+          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.bottom === 'single') return '╄';
+          if (connectors.left === 'thick' && connectors.top === 'thick' && connectors.bottom === 'single') return '╇';
+          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.bottom === 'thick') return '╈';
+          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.bottom === 'single') return '┿';
+          if (connectors.left === 'single' && connectors.top === 'single' && connectors.bottom === 'single') return '┾';
+          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.bottom === 'thick') return '╊';
+          if (connectors.left === 'thick' && connectors.top === 'thick' && connectors.bottom === 'thick') return '╋';
+
+        }
+
+        if (connectors.left === 'single') {
+          if (connectors.right === 'single' && connectors.top === 'single' && connectors.bottom === 'single') return '┼';
+          if (connectors.right === 'thick' && connectors.top === 'thick' && connectors.bottom === 'single') return '╄';
+          if (connectors.right === 'thick' && connectors.top === 'single' && connectors.bottom === 'thick') return '╆';
+          if (connectors.right === 'thick' && connectors.top === 'single' && connectors.bottom === 'single') return '┾';
+          if (connectors.right === 'single' && connectors.top === 'thick' && connectors.bottom === 'single') return '╀';
+          if (connectors.right === 'single' && connectors.top === 'single' && connectors.bottom === 'thick') return '╁';
+          if (connectors.right === 'thick' && connectors.top === 'thick' && connectors.bottom === 'thick') return '╊';
+          if (connectors.right === 'single' && connectors.top === 'thick' && connectors.bottom === 'thick') return '╂';
+
+        } else if (connectors.left === 'thick') {
+          if (connectors.right === 'single' && connectors.top === 'single' && connectors.bottom === 'single') return '┽';
+          if (connectors.right === 'single' && connectors.top === 'thick' && connectors.bottom === 'single') return '╃';
+          if (connectors.right === 'single' && connectors.top === 'single' && connectors.bottom === 'thick') return '╅';
+          if (connectors.right === 'thick' && connectors.top === 'single' && connectors.bottom === 'thick') return '╈';
+          if (connectors.right === 'thick' && connectors.top === 'thick' && connectors.bottom === 'single') return '╇';
+          if (connectors.right === 'thick' && connectors.top === 'single' && connectors.bottom === 'single') return '┿';
+          if (connectors.right === 'thick' && connectors.top === 'thick' && connectors.bottom === 'thick') return '╋';
+          if (connectors.right === 'single' && connectors.top === 'thick' && connectors.bottom === 'thick') return '╉';
+
+        }
+
+        if (connectors.bottom === 'single') {
+          if (connectors.left === 'single' && connectors.top === 'single' && connectors.right === 'single') return '┼';
+          if (connectors.left === 'thick' && connectors.top === 'thick' && connectors.right === 'single') return '╃';
+          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.right === 'thick') return '╄';
+          if (connectors.left === 'single' && connectors.top === 'single' && connectors.right === 'thick') return '┾';
+          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.right === 'single') return '┽';
+          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.right === 'single') return '╀';
+          if (connectors.left === 'thick' && connectors.top === 'thick' && connectors.right === 'thick') return '╇';
+          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.right === 'thick') return '┿';
+
+        } else if (connectors.bottom === 'thick') {
+          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.right === 'single') return '╅';
+          if (connectors.left === 'single' && connectors.top === 'single' && connectors.right === 'thick') return '╆';
+          if (connectors.left === 'thick' && connectors.top === 'single' && connectors.right === 'thick') return '╈';
+          if (connectors.left === 'single' && connectors.top === 'single' && connectors.right === 'single') return '╁';
+          if (connectors.left === 'thick' && connectors.top === 'thick' && connectors.right === 'single') return '╉';
+          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.right === 'thick') return '╊';
+          if (connectors.left === 'single' && connectors.top === 'thick' && connectors.right === 'single') return '╂';
+          if (connectors.left === 'thick' && connectors.top === 'thick' && connectors.right === 'thick') return '╋';
+
+        }
+
+      }
+
+      if (Object.keys(connectors).length === 3) {
+        if (connectors.top === 'single') {
+          if (connectors.left === 'single' && connectors.bottom === 'single') return '┤';
+          if (connectors.left === 'thick' && connectors.bottom === 'thick') return '┪';            
+          if (connectors.left === 'thick' && connectors.bottom === 'single') return '┥';            
+          if (connectors.left === 'single' && connectors.bottom === 'thick') return '┧';
+
+          if (connectors.right === 'single' && connectors.bottom === 'single') return '├';
+          if (connectors.right === 'thick' && connectors.bottom === 'thick') return '┢';
+          if (connectors.right === 'thick' && connectors.bottom === 'single') return '┝';
+          if (connectors.right === 'single' && connectors.bottom === 'thick') return '┟';
+
+          if (connectors.right === 'single' && connectors.left === 'single') return '┴';
+          if (connectors.right === 'single' && connectors.left === 'thick') return '┵';
+          if (connectors.right === 'thick' && connectors.left === 'single') return '┶';
+          if (connectors.right === 'thick' && connectors.left === 'thick') return '┷';
+
+        } else if (connectors.top === 'thick') {
+          if (connectors.left === 'thick' && connectors.bottom === 'thick') return '┫';
+          if (connectors.left === 'single' && connectors.bottom === 'thick') return '┨';
+          if (connectors.left === 'single' && connectors.bottom === 'single') return '┦';
+          if (connectors.left === 'thick' && connectors.bottom === 'single') return '┩';
+
+          if (connectors.right === 'thick' && connectors.bottom === 'thick') return '┣';
+          if (connectors.right === 'single' && connectors.bottom === 'thick') return '┠';
+          if (connectors.right === 'single' && connectors.bottom === 'single') return '┞';
+          if (connectors.right === 'thick' && connectors.bottom === 'single') return '┡';
+
+          if (connectors.right === 'thick' && connectors.left === 'thick') return '┻';
+          if (connectors.right === 'single' && connectors.left === 'single') return '┸';
+          if (connectors.right === 'single' && connectors.left === 'thick') return '┹';
+          if (connectors.right === 'thick' && connectors.left === 'single') return '┺';
+
+        }
+
+        if (connectors.bottom === 'single') {
+          if (connectors.left === 'single' && connectors.right === 'single') return '┬';            
+          if (connectors.left === 'thick' && connectors.right === 'single') return '┭';            
+          if (connectors.left === 'single' && connectors.right === 'thick') return '┮';            
+          if (connectors.left === 'thick' && connectors.right === 'thick') return '┯';
+
+          if (connectors.left === 'single' && connectors.top === 'single') return '┤';
+          if (connectors.left === 'thick' && connectors.top === 'single') return '┥';
+          if (connectors.left === 'single' && connectors.top === 'thick') return '┦';
+          if (connectors.left === 'thick' && connectors.top === 'thick') return '┩';
+
+          if (connectors.right === 'single' && connectors.top === 'single') return '├';
+          if (connectors.right === 'thick' && connectors.top === 'single') return '┝';
+          if (connectors.right === 'single' && connectors.top === 'thick') return '┞';
+          if (connectors.right === 'thick' && connectors.top === 'thick') return '┡';
+
+        } else if (connectors.bottom === 'thick') {
+          if (connectors.left === 'single' && connectors.right === 'single') return '┰';
+          if (connectors.left === 'thick' && connectors.right === 'single') return '┱';
+          if (connectors.left === 'single' && connectors.right === 'thick') return '┲';
+          if (connectors.left === 'thick' && connectors.right === 'thick') return '┳';
+
+          if (connectors.left === 'thick' && connectors.top === 'single') return '┪';
+          if (connectors.left === 'single' && connectors.top === 'single') return '┧';
+          if (connectors.left === 'thick' && connectors.top === 'thick') return '┫';
+          if (connectors.left === 'single' && connectors.top === 'thick') return '┨';
+
+          if (connectors.right === 'thick' && connectors.top === 'single') return '┢';
+          if (connectors.right === 'single' && connectors.top === 'single') return '┟';
+          if (connectors.right === 'thick' && connectors.top === 'thick') return '┣';
+          if (connectors.right === 'single' && connectors.top === 'thick') return '┠';
+
+        }
+
+        if (connectors.left === 'single') {
+
+          if (connectors.top === 'single' && connectors.bottom === 'single') return '┤';
+          if (connectors.top === 'single' && connectors.bottom === 'thick') return '┧';
+          if (connectors.top === 'thick' && connectors.bottom === 'single') return '┦';
+          if (connectors.top === 'thick' && connectors.bottom === 'thick') return '┨';
+
+          if (connectors.top === 'single' && connectors.right === 'single') return '┴';
+          if (connectors.top === 'single' && connectors.right === 'thick') return '┶';
+          if (connectors.right === 'single' && connectors.top === 'thick') return '┸';
+          if (connectors.right === 'thick' && connectors.top === 'thick') return '┺';
+
+          if (connectors.bottom === 'single' && connectors.right === 'single') return '┬';
+          if (connectors.bottom === 'single' && connectors.right === 'thick') return '┮';
+          if (connectors.bottom === 'single' && connectors.right === 'single') return '┰';
+          if (connectors.bottom === 'thick' && connectors.right === 'thick') return '┲';
+
+        } else if (connectors.left === 'thick') {
+          if (connectors.right === 'single' && connectors.top === 'single') return '┵';
+          if (connectors.right === 'thick' && connectors.top === 'single') return '┷';
+          if (connectors.right === 'thick' && connectors.top === 'thick') return '┻';
+          if (connectors.right === 'single' && connectors.top === 'thick') return '┹';
+          
+          if (connectors.top === 'thick' && connectors.bottom === 'thick') return '┫';
+          if (connectors.top === 'single' && connectors.bottom === 'single') return '┥';
+          if (connectors.top === 'thick' && connectors.bottom === 'single') return '┩';
+          if (connectors.top === 'single' && connectors.bottom === 'thick') return '┪';
+
+          if (connectors.bottom === 'single' && connectors.right === 'single') return '┭';            
+          if (connectors.bottom === 'single' && connectors.right === 'thick') return '┯';
+          if (connectors.bottom === 'thick' && connectors.right === 'single') return '┱';
+          if (connectors.bottom === 'thick' && connectors.right === 'thick') return '┳';
+
+        }
+
+        if (connectors.right === 'single') {
+          if (connectors.bottom === 'single' && connectors.top === 'single') return '├';
+          if (connectors.bottom === 'single' && connectors.top === 'thick') return '┞';
+          if (connectors.bottom === 'thick' && connectors.top === 'thick') return '┠';
+          if (connectors.bottom === 'thick' && connectors.top === 'single') return '┟';
+
+          if (connectors.bottom === 'single' && connectors.left === 'single') return '┬';
+          if (connectors.bottom === 'thick' && connectors.left === 'single') return '┰';
+          if (connectors.bottom === 'single' && connectors.left === 'thick') return '┭';            
+          if (connectors.bottom === 'thick' && connectors.left === 'thick') return '┱';
+
+          if (connectors.left === 'single' && connectors.top === 'single') return '┴';
+          if (connectors.left === 'single' && connectors.top === 'thick') return '┸';
+          if (connectors.left === 'thick' && connectors.top === 'single') return '┵';
+          if (connectors.left === 'thick' && connectors.top === 'thick') return '┹';
+
+        } else if (connectors.right === 'thick') {
+          if (connectors.top === 'thick' && connectors.bottom === 'thick') return '┣';
+          if (connectors.top === 'single' && connectors.bottom === 'thick') return '┟';
+          if (connectors.top === 'thick' && connectors.bottom === 'single') return '┡';
+          if (connectors.top === 'single' && connectors.bottom === 'single') return '┝';
+
+          if (connectors.left === 'thick' && connectors.bottom === 'thick') return '┳';
+          if (connectors.left === 'single' && connectors.bottom === 'thick') return '┲';
+          if (connectors.left === 'single' && connectors.bottom === 'single') return '┮';
+          if (connectors.left === 'thick' && connectors.bottom === 'single') return '┯';
+
+          if (connectors.left === 'single' && connectors.top === 'single') return '┶';
+          if (connectors.left === 'single' && connectors.top === 'thick') return '┺';
+          if (connectors.left === 'thick' && connectors.top === 'single') return '┷';
+          if (connectors.left === 'thick' && connectors.top === 'thick') return '┻';
+
+        }
+
+      }
+  
+      if (Object.keys(connectors).length === 2) {
+        if (connectors.top === 'single') {
+          if (connectors.right === 'single') return '└';
+          if (connectors.right === 'thick') return '┕';
+          if (connectors.bottom === 'single') return '│';
+          if (connectors.bottom === 'thick') return '┃'; // there is no suitable symbol
+          if (connectors.left === 'single') return '┘';
+          if (connectors.left === 'thick') return '┙';
+
+        } else if (connectors.top === 'thick') {
+          if (connectors.right === 'single') return '┖';
+          if (connectors.right === 'thick') return '┗';
+          if (connectors.bottom === 'single') return '┃'; // there is no suitable symbol
+          if (connectors.bottom === 'thick') return '┃';
+          if (connectors.left === 'single') return '┚';
+          if (connectors.left === 'thick') return '┛';
+
+        }
+
+        if (connectors.right === 'single') {
+          if (connectors.bottom === 'single') return '┌';
+          if (connectors.bottom === 'thick') return '┎';
+          if (connectors.left === 'single') return '─';
+          if (connectors.left === 'thick') return '━'; // there is no suitable symbol
+          if (connectors.top === 'single') return '└';
+          if (connectors.top === 'thick') return '┖';
+      
+        } else if (connectors.right === 'thick'){
+          if (connectors.bottom === 'single') return '┍';
+          if (connectors.bottom === 'thick') return '┏';
+          if (connectors.left === 'single') return '━'; // there is no suitable symbol
+          if (connectors.left === 'thick') return '━';
+          if (connectors.top === 'single') return '┕';
+          if (connectors.top === 'thick') return '┗';
+        
+        }
+   
+        if (connectors.bottom === 'single') {
+          if (connectors.left === 'single') return '┐';
+          if (connectors.left === 'thick') return '┑';
+          if (connectors.right === 'single') return '┌';
+          if (connectors.right === 'thick') return '┍';
+          if (connectors.top === 'single') return '│';
+          if (connectors.top === 'thick') return '┃'; // there is no suitable symbol
+        
+        } else if (connectors.bottom === 'thick') {
+          if (connectors.left === 'single') return '┒';
+          if (connectors.left === 'thick') return '┓';
+          if (connectors.right === 'single') return '┎';
+          if (connectors.right === 'thick') return '┏';
+          if (connectors.top === 'single') return '╘';
+          if (connectors.top === 'thick') return '╚';
+     
+        }
+
+        if (connectors.left === 'single') {
+          if (connectors.bottom === 'single') return '┐';
+          if (connectors.bottom === 'thick') return '┒';
+          if (connectors.right === 'single') return '─';
+          if (connectors.right === 'thick') return '━'; // there is no suitable symbol
+          if (connectors.top === 'single') return '┘';
+          if (connectors.top === 'thick') return '┚';
+        
+        } else if (connectors.left === 'thick') {
+          if (connectors.bottom === 'single') return '┑';
+          if (connectors.bottom === 'thick') return '┓';
+          if (connectors.right === 'single') return '━'; // there is no suitable symbol
+          if (connectors.right === 'thick') return '━';
+          if (connectors.top === 'single') return '┙';
+          if (connectors.top === 'thick') return '┛';
+
+        }
+      }
+
+    },
+
+    linkInfo: function(line) {
+      if (line === ' ') return {};
+
+      if (line === '│') return {
+        top: 'single',
+        bottom: 'single'
+      };
+
+      if (line === '─') return {
+        left: 'single',
+        right: 'single'
+      };
+
+      if (line === '┼') return {
+        top: 'single',
+        left: 'single',
+        right: 'single',
+        bottom: 'single'
+      };
+
+      if (line === '┤') return {
+        top: 'single',
+        left: 'single',
+        bottom: 'single'
+      };
+
+      if (line === '┐') return {
+        bottom: 'single',
+        left: 'single'
+      };
+
+      if (line === '└') return {
+        top: 'single',
+        right: 'single'
+      };
+
+      if (line === '┴') return {
+        top: 'single',
+        right: 'single',
+        left: 'single'
+      };
+
+      if (line === '┬') return {
+        left: 'single',
+        right: 'single',
+        bottom: 'single'
+      };
+
+      if (line === '├') return {
+        right: 'single',
+        top: 'single',
+        bottom: 'single'
+      };
+
+      if (line === '┘') return {
+        top: 'single',
+        left: 'single'
+      };
+
+      if (line === '┌') return {
+        right: 'single',
+        bottom: 'single'
+      };
+
+      // cross
 
       if (line === '┃') return {
         top: 'single',
@@ -1685,7 +1926,7 @@ module = module.exports = (function () {
       if (line === '┱') return {
         right: 'single',
         left: 'thick',
-        bottom: 'single'
+        bottom: 'thick'
       };
 
       if (line === '┲') return {
