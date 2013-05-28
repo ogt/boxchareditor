@@ -772,37 +772,6 @@ module = module.exports = (function () {
           if (connectors.left === 'single' && connectors.right === 'single' && connectors.bottom === 'double') return '╫';
           if (connectors.left === 'double' && connectors.right === 'double' && connectors.bottom === 'double') return '╬';
         }
-
-        if (connectors.right === 'single') {
-          if (connectors.left === 'single' && connectors.top === 'single' && connectors.bottom === 'single') return '┼';
-
-          if (connectors.left === 'single' && connectors.top === 'double' && connectors.bottom === 'double') return '╫';
-
-        } else if (connectors.right === 'double') {
-          if (connectors.left === 'double' && connectors.top === 'double' && connectors.bottom === 'single') return '╪';
-          if (connectors.left === 'double' && connectors.right === 'double' && connectors.bottom === 'double') return '╬';
-        }
-
-        if (connectors.left === 'single') {
-          if (connectors.right === 'single' && connectors.top === 'single' && connectors.bottom === 'single') return '┼';
-
-          if (connectors.right === 'single' && connectors.top === 'double' && connectors.bottom === 'double') return '╫';
-
-        } else if (connectors.left === 'double') {
-          if (connectors.right === 'double' && connectors.top === 'single' && connectors.bottom === 'single') return '╪';
-          if (connectors.right === 'double' && connectors.top === 'double' && connectors.bottom === 'double') return '╬';
-        }
-
-        if (connectors.bottom === 'single') {
-          if (connectors.left === 'single' && connectors.top === 'single' && connectors.right === 'single') return '┼';
-
-          if (connectors.left === 'double' && connectors.top === 'single' && connectors.right === 'double') return '╪';
-
-        } else if (connectors.bottom === 'double') {
-          if (connectors.left === 'single' && connectors.top === 'double' && connectors.right === 'single') return '╫';
-          if (connectors.left === 'double' && connectors.top === 'double' && connectors.right === 'double') return '╬';
-        }
-
       }
 
       if (Object.keys(connectors).length === 3) {
@@ -825,80 +794,20 @@ module = module.exports = (function () {
           if (connectors.right === 'single' && connectors.left === 'single') return '╨';
           if (connectors.right === 'double' && connectors.left === 'double') return '╩';
         }
-
         if (connectors.bottom === 'single') {
           if (connectors.left === 'single' && connectors.right === 'single') return '┬';
-
           if (connectors.left === 'double' && connectors.right === 'double') return '╤';
-
-          if (connectors.left === 'single' && connectors.top === 'single') return '┤';
-
-          if (connectors.left === 'double' && connectors.top === 'single') return '╡';
-
-          if (connectors.right === 'single' && connectors.top === 'single') return '├';
-
-          if (connectors.right === 'double' && connectors.top === 'single') return '╞';
 
         } else if (connectors.bottom === 'double') {
           if (connectors.left === 'single' && connectors.right === 'single') return '╥';
           if (connectors.left === 'double' && connectors.right === 'double') return '╦';
-          if (connectors.left === 'double' && connectors.top === 'double') return '╣';
-          if (connectors.left === 'single' && connectors.top === 'double') return '╢';
-          if (connectors.right === 'single' && connectors.top === 'double') return '╟';
-          if (connectors.right === 'double' && connectors.top === 'double') return '╠';
         }
-
-        if (connectors.left === 'single') {
-
-          if (connectors.top === 'single' && connectors.bottom === 'single') return '┤';
-
-          if (connectors.bottom === 'double' && connectors.top === 'double') return '╢';
-
-          if (connectors.top === 'single' && connectors.right === 'single') return '┴';
-
-          if (connectors.right === 'single' && connectors.top === 'double') return '╨';
-
-          if (connectors.bottom === 'single' && connectors.right === 'single') return '┬';
-
-          if (connectors.bottom === 'double' && connectors.right === 'single') return '╥';
-
-        } else if (connectors.left === 'double') {
-          if (connectors.top === 'single' && connectors.bottom === 'single') return '╡';
-          if (connectors.top === 'single' && connectors.right === 'double') return '╧';
-          if (connectors.bottom === 'single' && connectors.right === 'double') return '╤';
-          if (connectors.top === 'double' && connectors.bottom === 'double') return '╣';
-          if (connectors.top === 'double' && connectors.right === 'double') return '╩';
-          if (connectors.bottom === 'double' && connectors.right === 'double') return '╦';
-
-        }
-
-        if (connectors.right === 'single') {
-          if (connectors.bottom === 'single' && connectors.top === 'single') return '├';
-
-          if (connectors.bottom === 'double' && connectors.top === 'double') return '╟';
-
-          if (connectors.bottom === 'single' && connectors.left === 'single') return '┬';
-
-          if (connectors.bottom === 'double' && connectors.left === 'single') return '╥';
-
-          if (connectors.left === 'single' && connectors.top === 'single') return '┴';
-
-          if (connectors.left === 'single' && connectors.top === 'double') return '╨';
-
-        } else if (connectors.right === 'double') {
-          if (connectors.top === 'single' && connectors.left === 'double') return '╧';
-          if (connectors.bottom === 'double' && connectors.left === 'double') return '╦';
-          if (connectors.bottom === 'single' && connectors.left === 'double') return '╤';
-          if (connectors.top === 'double' && connectors.left === 'double') return '╩';
-          if (connectors.top === 'single' && connectors.bottom === 'single') return '╞';
-          if (connectors.top === 'double' && connectors.bottom === 'double') return '╠';
-
-        }
-
       }
   
       if (Object.keys(connectors).length === 2) {
+// console.log('test',connectors)
         if (connectors.top === 'single') {
+// console.log('connectors.top single', connectors)
           if (connectors.right === 'single') return '└';
           if (connectors.bottom === 'single') return '│';
           if (connectors.bottom === 'double') return '│'; // there is no suitable symbol

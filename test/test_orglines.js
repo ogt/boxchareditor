@@ -81,10 +81,45 @@ test('drawing window', function(t) {
   t.end();
 });
 
+test('drawing cross single vertical with single', function(t) {
+  t.plan(1);
+
+  var input = [
+    ' │ '
+  ];
+  var output = [
+    ' ┼ '
+  ];
+  var moves = 'R: :1,R:-:1,L: :1,L:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing cross single horizontal with single', function(t) {
+  t.plan(1);
+
+  var input = [ 
+    '   ',
+    ' ─ ',
+    '   '
+  ];
+  var output = [
+    '   ',
+    ' ┼ ',
+    '   '
+  ];
+  var moves = 'R: :1,D: :1,U:-:1,D: :1,D:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
 test('drawing a 2x2 square', function (t) {
   t.plan(1);
 
-//   0123456789012345678901234567890123456789012345678901234567890123456789
   var input = [
     '                   ',
     '                   ',
@@ -104,10 +139,51 @@ test('drawing a 2x2 square', function (t) {
   t.end();
 });
 
+test('drawing a 2x2 square mixing', function (t) {
+  t.plan(1);
+
+  var input = [
+    '       ',
+    '       ',
+    '       ',
+    '       '
+  ];
+  var output = [
+    '       ',
+    '  ┎─┒  ',
+    '  ┖─┚  ',
+    '       '
+  ];
+  var moves = 'D: :2,R: :2,U:=:1,R:-:2,D:=:1,L:-:2';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing bottom half a 2x2 square mixing', function (t) {
+  t.plan(1);
+
+  var input = [
+    '       ',
+    '       ',
+    '       '
+  ];
+  var output = [
+    '  ┃ ┃  ',
+    '  ┖─┚  ',
+    '       '
+  ];
+  var moves = 'R: :2,D:=:1,U: :1,R: :2,D:=:1,L:-:2';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
 test('erasing top half a 2x2 square', function (t) {
   t.plan(1);
 
-//   0123456789012345678901234567890123456789012345678901234567890123456789
   var input = [
     '                   ',
     '          ┏┓       ',
@@ -130,7 +206,6 @@ test('erasing top half a 2x2 square', function (t) {
 test('erasing left half a 2x2 square', function (t) {
   t.plan(1);
 
-//   0123456789012345678901234567890123456789012345678901234567890123456789
   var input = [
     '                   ',
     '          ┏┓       ',
@@ -153,7 +228,6 @@ test('erasing left half a 2x2 square', function (t) {
  test('writing/erasing at edge of buffer', function (t) {
   t.plan(1);
 
-//   0123456789012345678901234567890123456789012345678901234567890123456789
   var input = [
     '┏┓',
     '┗┛'

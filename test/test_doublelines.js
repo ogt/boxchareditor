@@ -113,7 +113,7 @@ test('drawing cross single with double', function(t) {
   t.end();
 });
 
-test('drawing cross double with single', function(t) {
+test('drawing cross double with single top', function(t) {
   t.plan(1);
 
   var input = [
@@ -128,6 +128,29 @@ test('drawing cross double with single', function(t) {
   t.equal(l[0],l[1]);
   t.end();
 });
+
+
+
+
+test('drawing cross double with single right', function(t) {
+  t.plan(1);
+
+  var input = [
+    '   │   '
+  ];
+  var output = [
+    '  ═╪══ '
+  ];
+  var moves = 'R: :5,L:=:4';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+
+
+
 
 test('drawing cross single with single', function(t) {
   t.plan(1);
@@ -145,10 +168,285 @@ test('drawing cross single with single', function(t) {
   t.end();
 });
 
+test('drawing cross double with single', function(t) {
+  t.plan(1);
+
+  var input = [
+    ' ║ '
+  ];
+  var output = [
+    ' ╫ '
+  ];
+  var moves = 'R: :1,R:-:1,L: :1,L:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing cross double with single', function(t) {
+  t.plan(1);
+
+  var input = [
+    '   ',
+    ' ─ ',
+    '   '
+  ];
+  var output = [
+    '   ',
+    ' ╫ ',
+    '   '
+  ];
+  var moves = 'R: :1,D: :1,U:=:1,D: :1,D:=:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing window', function(t) {
+  t.plan(1);
+
+  var input = [
+    '     ',
+    '     ',
+    '     '
+  ];
+  var output = [
+    ' ┌╥┐ ',
+    ' ╞╬╡ ',
+    ' └╨┘ '
+  ];
+  var moves = 'R: :1,R:-:2,D:-:2,L:-:2,U:-:2,R: :1,D:=:2,L: :1,U: :1,R:=:2';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing window', function(t) {
+  t.plan(1);
+
+  var input = [
+    '     ',
+    '     ',
+    '     '
+  ];
+  var output = [
+    ' ╔╤╗ ',
+    ' ╟┼╢ ',
+    ' ╚╧╝ '
+  ];
+  var moves = 'R: :1,R:=:2,D:=:2,L:=:2,U:=:2,R: :1,D:-:2,L: :1,U: :1,R:-:2';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing window', function(t) {
+  t.plan(1);
+
+  var input = [
+    ' └─┘ ',
+    '     '
+  ];
+  var output = [
+    ' ├─┤ ',
+    '     '
+  ];
+  var moves = 'R: :1,D:-:1,U: :1,R: :2,D:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing single and double top left angle crossing', function(t) {
+  t.plan(1);
+
+  var input = [
+    '     ',
+    '  ══ '
+  ];
+  var output = [
+    '  │  ',
+    '  ╘═ '
+  ];
+  var moves = 'R: :2,D:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing single and double top right angle crossing', function(t) {
+  t.plan(1);
+
+  var input = [
+    '     ',
+    '  ══ '
+  ];
+  var output = [
+    '   │ ',
+    '  ═╛ '
+  ];
+  var moves = 'R: :3,D:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+
+test('drawing single and double top crossing', function(t) {
+  t.plan(1);
+
+  var input = [
+    '   ',
+    '   ',
+    ' ║ '
+  ];
+  var output = [
+    ' │ ',
+    ' │ ',
+    ' ║ '
+  ];
+  var moves = 'R: :1,D:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing double and single top crossing', function(t) {
+  t.plan(1);
+
+  var input = [
+    '   ',
+    '   ',
+    ' │ '
+  ];
+  var output = [
+    ' ║ ',
+    ' ║ ',
+    ' │ '
+  ];
+  var moves = 'R: :1,D:=:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing double and single top left angle crossing', function(t) {
+  t.plan(1);
+
+  var input = [
+    '     ',
+    '  ── '
+  ];
+  var output = [
+    '  ║  ',
+    '  ╙─ '
+  ];
+  var moves = 'R: :2,D:=:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing double and single top right angle crossing', function(t) {
+  t.plan(1);
+
+  var input = [
+    '     ',
+    '  ── '
+  ];
+  var output = [
+    '   ║ ',
+    '  ─╜ '
+  ];
+  var moves = 'R: :3,D:=:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing double right crossing', function(t) {
+  t.plan(1);
+
+  var input = [
+    '   ═  '
+  ];
+  var output = [
+    ' ─══  '
+  ];
+  var moves = 'R: :1,R:-:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing single right crossing', function(t) {
+  t.plan(1);
+
+  var input = [
+    '   ─  '
+  ];
+  var output = [
+    ' ═──  '
+  ];
+  var moves = 'R: :1,R:=:1';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+test('drawing double and single right top angle crossing', function(t) {
+  t.plan(1);
+
+  var input = [
+    '  ── ',
+    '     '
+  ];
+  var output = [
+    ' ╓── ',
+    ' ║   ',
+  ];
+  var moves = 'R: :1,D:=:2';
+
+  var l = do_test(input,output,moves);
+  t.equal(l[0],l[1]);
+  t.end();
+});
+
+// test('drawing double and single right bottom angle crossing', function(t) {
+//   t.plan(1);
+
+//   var input = [
+//     '   ── '
+//   ];
+//   var output = [
+//     '  ╙── '
+//   ];
+//   var moves = 'D: :1,R: :3,L:-:,U:=:1';
+
+//   var l = do_test(input,output,moves);
+//   t.equal(l[0],l[1]);
+//   t.end();
+// });
+
+
+
+
 test('drawing a 2x2 square', function (t) {
   t.plan(1);
 
-//   0123456789012345678901234567890123456789012345678901234567890123456789
   var input = [
     '                   ',
     '                   ',
@@ -171,7 +469,6 @@ test('drawing a 2x2 square', function (t) {
 test('erasing top half a 2x2 square', function (t) {
   t.plan(1);
 
-//   0123456789012345678901234567890123456789012345678901234567890123456789
   var input = [
     '                   ',
     '          ╔╗       ',
@@ -194,7 +491,6 @@ test('erasing top half a 2x2 square', function (t) {
 test('erasing left half a 2x2 square', function (t) {
   t.plan(1);
 
-//   0123456789012345678901234567890123456789012345678901234567890123456789
   var input = [
     '                   ',
     '          ╔╗       ',
@@ -217,7 +513,6 @@ test('erasing left half a 2x2 square', function (t) {
  test('writing/erasing at edge of buffer', function (t) {
   t.plan(1);
 
-//   0123456789012345678901234567890123456789012345678901234567890123456789
   var input = [
     '╔╗',
     '╚╝'
