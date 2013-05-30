@@ -265,11 +265,9 @@ function keyPressed(e) {
   var brush = brushes.NOBRUSH
   if (e.shiftKey) brush = brushes.BRUSHSINGLE;
   if (e.altKey) brush = brushes.BRUSHERASE;
-  if (e.shiftKey && e.metaKey) brush = brushes.BRUSHDOUBLE;
-  if (e.ctrlKey) {
-      brush = brushes.BRUSHDOUBLE;
-
-  }
+  if (e.shiftKey && e.metaKey) brush = brushes.BRUSHDOUBLE; // not work in ubuntu
+  if (e.ctrlKey) brush = brushes.BRUSHDOUBLE;
+  // if (e.ctrlKey) brush = brushes.BRUSHTHICK;
 
   var speed = $('#speed').val() || model.speed;
   
