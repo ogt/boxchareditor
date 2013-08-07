@@ -2,6 +2,7 @@
   "name": "boxchareditor",
   "description": "",
   "version": "0.0.0",
+  "man" : "./man/boxchareditor.1",
   "repository": {
     "url": "git://github.com/ogt/boxchareditor.git"
   },
